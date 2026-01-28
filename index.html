@@ -931,7 +931,7 @@ const qAI=`<svg class="pulsing" viewBox="0 0 24 24" fill="none" stroke="currentC
 const ail=currM==='study'?qAI:dAI
 ld.className='msg';ld.id='loading';ld.innerHTML=`<div class="avatar a">${ail}</div><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`
 mc.appendChild(ld);mc.scrollTop=mc.scrollHeight
-let ms=ci.length?['llama-3.2-90b-vision-preview','llama-3.2-11b-vision-preview']:['llama-3.3-70b-versatile','llama-3.1-70b-versatile','llama-3.1-8b-instant','mixtral-8x7b-32768']
+let ms=ci.length?['llama-3.2-11b-vision-preview','llama-3.2-90b-vision-preview']:['llama-3.3-70b-versatile','llama-3.1-70b-versatile','llama-3.1-8b-instant','mixtral-8x7b-32768']
 let p=v;if(sMode)p+=" (Please search the web for this, and provide links/URLs to your sources so I can display them)"
 if(currM==='think')p="<thought>\n[Reasoning process...]\n</thought>\nThink Deeper Mode: Provide a highly detailed, step-by-step complex reasoning for: "+p
 if(currM==='study'){
@@ -947,14 +947,14 @@ if(p.u)msg.push({role:'user',content:p.u})
 if(p.a)msg.push({role:'assistant',content:p.a})
 })
 if(msgsToUse){
-msgsToUse.slice(-15).forEach(m=>{
-if(m.ig){
+msgsToUse.slice(-15).forEach((m,i,a)=>{
+if(m.ig&&i>=a.length-2){
 const content=[{type:'text',text:m.t}]
 const ims=Array.isArray(m.ig)?m.ig:[m.ig]
 ims.forEach(url=>content.push({type:'image_url',image_url:{url}}))
 msg.push({role:m.is?'assistant':'user',content})
 }
-else msg.push({role:m.is?'assistant':'user',content:m.t})
+else msg.push({role:m.is?'assistant':'user',content:(m.ig?'[Image] ':'')+m.t})
 })
 }
 const curC=[{type:'text',text:p}]
@@ -974,8 +974,8 @@ if(s&&s.title==='New Chat')genTitle(sid,v,ans);
 return
 }}
 else{console.log(m,r.status)}}catch(e){if(e.name==='AbortError')return;console.log(e)}
-await new Promise(r=>setTimeout(r,500))}
-endGen();add("Sorry, all models are currently busy or there's a connection issue. Please try again later.",true)}
+await new Promise(r=>setTimeout(r,1000))}
+endGen();add("Vision models are currently experiencing high traffic. Please try again in a moment.",true)}
 sb.onclick=run
 nb.onclick=createS
 pi.onkeydown=(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();run()}}
