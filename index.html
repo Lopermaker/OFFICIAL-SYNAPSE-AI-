@@ -235,7 +235,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 <textarea id="p" placeholder="Send a message..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
 <div class="bar">
 <div class="tools">
-<div class="tool" onclick="document.getElementById('fi').click()" data-tip="Upload images for analysis"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Image</div>
+<div class="tool" onclick="showM('Image Upload Disabled',null,()=>{},false,'Images are currently disabled.')" data-tip="Upload images for analysis"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Image</div>
 <div class="tool" id="t-s" onclick="togS()" data-tip="Search the web for real-time info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search</div>
 <div class="tool" style="position:relative" data-tip="Choose a reasoning mode">
 <div onclick="togMD()" style="display:flex;align-items:center;gap:5px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Modes <span id="m-act" style="color:var(--a-c);font-size:10px;font-weight:700"></span></div>
@@ -986,21 +986,14 @@ sb.onclick=run
 nb.onclick=createS
 pi.onkeydown=(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();run()}}
 pi.onpaste=(e)=>{
-  const its= e.clipboardData.items,us=JSON.parse(localStorage.getItem('us')||'{}')[currU]
-  let ni=0
-  for(const it of its)if(it.type.includes('image'))ni++
+  const its=e.clipboardData.items
   for(const it of its){
-  if(it.type.includes('image')){
-  const f=it.getAsFile(), r=new FileReader()
-  r.onload=ev=>{
-  showM('Early Access Notice',null,()=>{
-  imgs.push(ev.target.result)
-  updPv()
-  },false,"Image analysis is in early preview. Performance may vary.")
-   };r.readAsDataURL(f)
+    if(it.type.includes('image')){
+      e.preventDefault()
+      return showM('Image Upload Disabled',null,()=>{},false,'Images are currently disabled.')
+    }
   }
-   }
-  }
+}
 load();window.onbeforeunload=save
 </script>
 <div id="tt"></div>
