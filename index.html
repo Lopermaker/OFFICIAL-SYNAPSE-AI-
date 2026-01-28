@@ -97,7 +97,7 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
 .p-i{position:relative;width:60px;height:60px;border-radius:8px;overflow:hidden;border:1px solid #565869}
 .p-i img{width:100%;height:100%;object-fit:contain;background:#fff}
 .p-i .x{position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.5);color:#fff;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer}
-#mdl,#set{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:1000}#mdl{z-index:1100}
+#mdl,#set{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:1000}#mdl{z-index:2100}
 .mdl-c{background:var(--s-bg);border:1px solid #565869;border-radius:8px;padding:24px;width:90%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.5);max-height:85vh;overflow-y:auto}
 .mdl-t{font-size:18px;font-weight:600;margin-bottom:16px;color:var(--t-c)}
 #mdl-i{width:100%;background:var(--m-bg);border:1px solid #565869;color:var(--t-c);padding:12px;border-radius:6px;margin-bottom:20px;outline:none;box-sizing:border-box;font-family:inherit}
@@ -114,7 +114,7 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
   .msg {padding:15px;max-width:100%}
   #in {padding:10px}
 }
-.menu-btn {display:none;position:absolute;top:10px;left:10px;z-index:90;padding:8px;border-radius:4px;color:var(--t-c);background:transparent;border:none;cursor:pointer}
+.menu-btn {display:none;position:fixed;top:10px;left:10px;z-index:101;padding:8px;border-radius:4px;color:var(--t-c);background:transparent;border:none;cursor:pointer}
 .menu-btn:hover {background:var(--h-bg)}
 .ovl {position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99;display:none}
 .ovl.show {display:block}
@@ -201,6 +201,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 <button class="auth-btn" id="a-b" onclick="auth()">Login</button>
 <div class="auth-t" id="a-t" onclick="togA()">Don't have an account? <span>Sign up</span></div>
+<div style="margin-top:15px;font-size:12px;color:var(--t-s);cursor:pointer" onclick="impD()">Already have a code? <span style="color:var(--a-c)">Import Account</span></div>
 </div>
 </div>
 <div id="s">
