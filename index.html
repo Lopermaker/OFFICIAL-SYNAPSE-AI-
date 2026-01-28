@@ -224,8 +224,8 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 </div>
 <div id="m">
-<button class="menu-btn" onclick="togS()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
-<div class="ovl" onclick="togS()"></div>
+<button class="menu-btn" onclick="togNav()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+<div class="ovl" onclick="togNav()"></div>
 <div id="msgs"></div>
 <div id="down" onclick="mc.scrollTop=mc.scrollHeight"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg></div>
 <div id="in"><div id="box">
@@ -597,6 +597,11 @@ p.innerHTML=up.innerHTML=currU[0]
 document.getElementById('pfp-x').style.display='none'
 render();switchS(sid)
 }
+function togNav(){
+  const s=document.getElementById('s'),o=document.querySelector('.ovl');
+  s.classList.toggle('open');
+  o.classList.toggle('show');
+}
 function togS(){sMode=!sMode;document.getElementById('t-s').classList.toggle('on',sMode)}
 function togMD(){const d=document.getElementById('m-drop');d.style.display=d.style.display==='flex'?'none':'flex'}
 function setM(m){
@@ -695,6 +700,7 @@ ht.appendChild(d)
 })
 }
 function switchS(id){
+if(window.innerWidth<=768){document.getElementById('s').classList.remove('open');document.querySelector('.ovl').classList.remove('show')}
 if(!tmpMode&&sid&&sid!==id){
 const c=ss.find(x=>x.id===sid)
 if(c&&!c.msgs.length)ss=ss.filter(x=>x.id!==sid)
@@ -728,6 +734,7 @@ tmpMode=false;const s={id:Date.now().toString(),ts:Date.now(),title:'New Chat',m
 ss.unshift(s);sid=s.id;save();render();mc.innerHTML=''
 }
 function createTmp(){
+if(window.innerWidth<=768){document.getElementById('s').classList.remove('open');document.querySelector('.ovl').classList.remove('show')}
 tmpMode=true;sid=null;tmpMsgs=[];mc.innerHTML='';save();render()
 pi.value='';pi.style.height='auto';pi.focus();if(gen)endGen()
 add('Temporary Chat Active. Messages here are not saved.',true,false)
