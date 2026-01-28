@@ -106,7 +106,18 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
 .mdl-btn{padding:10px 20px;border-radius:6px;cursor:pointer;font-size:14px;border:none;font-weight:500;transition:opacity 0.2s}
 .mdl-btn:hover{opacity:0.9}
 .mdl-ok{background:var(--a-c);color:#fff}
-.mdl-ok.del{background:#d93025}
+@media (max-width: 768px) {
+  #s {position:fixed;z-index:100;height:100%;transform:translateX(-100%);width:260px;box-shadow:2px 0 10px rgba(0,0,0,0.5)}
+  #s.open {transform:translateX(0)}
+  .menu-btn {display:flex!important}
+  #box {border-radius:0;border:none;border-top:1px solid var(--b-c)}
+  .msg {padding:15px;max-width:100%}
+  #in {padding:10px}
+}
+.menu-btn {display:none;position:absolute;top:10px;left:10px;z-index:90;padding:8px;border-radius:4px;color:var(--t-c);background:transparent;border:none;cursor:pointer}
+.menu-btn:hover {background:var(--h-bg)}
+.ovl {position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99;display:none}
+.ovl.show {display:block}
 .mdl-cn{background:transparent;color:var(--t-c);border:1px solid #565869}
 #auth{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:2000}
 .auth-c{background:var(--s-bg);padding:40px;border-radius:12px;width:100%;max-width:400px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.5);border:1px solid var(--b-c)}
@@ -212,7 +223,10 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 </div>
 </div>
-<div id="m"><div id="msgs"></div>
+<div id="m">
+<button class="menu-btn" onclick="togS()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+<div class="ovl" onclick="togS()"></div>
+<div id="msgs"></div>
 <div id="down" onclick="mc.scrollTop=mc.scrollHeight"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg></div>
 <div id="in"><div id="box">
 <div id="prev"><img id="pi"><div class="x" onclick="clrI()">×</div></div>
@@ -326,6 +340,10 @@ Preview
 </div>
 <div class="set-o">
 <label>Data</label>
+<div style="display:flex;gap:10px;margin-bottom:10px">
+<button class="mdl-btn mdl-cn" onclick="expD()" style="flex:1">Export Account</button>
+<button class="mdl-btn mdl-cn" onclick="impD()" style="flex:1">Import Account</button>
+</div>
 <div class="sw-c" style="border-color:#ff4b4b;justify-content:center;background:rgba(255,75,75,0.15)" onclick="resetAll()">
 <div style="font-size:13px;color:#d93025;font-weight:700">FACTORY RESET (DELETE ALL CHATS)</div>
 </div>
@@ -529,6 +547,29 @@ function resetAll(){
 showM('Factory Reset',null,()=>{
 ss=[];sid=null;createS();togSet()
 },true,'Are you sure you want to delete ALL chat sessions? This cannot be undone.')
+}
+function expD(){
+const d=localStorage.getItem('us')
+if(!d)return showM('Error',null,()=>{},false,'No account data found.')
+navigator.clipboard.writeText(btoa(unescape(encodeURIComponent(d)))).then(()=>{
+showM('Export Successful',null,()=>{},false,'Account data copied to clipboard! Paste it in the Import section on another device.')
+}).catch(e=>{
+showM('Export Failed',null,()=>{},false,'Could not copy to clipboard. Please allow clipboard access.')
+})
+}
+function impD(){
+showM('Import Account','<textarea id="imp-t" placeholder="Paste your account code here..." style="width:100%;height:100px;margin-bottom:10px;background:var(--m-bg);color:var(--t-c);border:1px solid #565869;padding:10px;border-radius:5px"></textarea>',()=>{
+const t=document.getElementById('imp-t').value.trim()
+if(!t)return
+try{
+const d=decodeURIComponent(escape(atob(t)))
+JSON.parse(d)
+localStorage.setItem('us',d)
+location.reload()
+}catch(e){
+alert('Invalid account code!')
+}
+},true,'Warning: This will OVERWRITE current accounts on this device!')
 }
 function updT(t){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
