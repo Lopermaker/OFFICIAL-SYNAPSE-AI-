@@ -931,7 +931,7 @@ const qAI=`<svg class="pulsing" viewBox="0 0 24 24" fill="none" stroke="currentC
 const ail=currM==='study'?qAI:dAI
 ld.className='msg';ld.id='loading';ld.innerHTML=`<div class="avatar a">${ail}</div><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`
 mc.appendChild(ld);mc.scrollTop=mc.scrollHeight
-let ms=ci.length?['llama-3.2-11b-vision-preview','llama-3.2-90b-vision-preview']:['llama-3.3-70b-versatile','llama-3.1-70b-versatile','llama-3.1-8b-instant','mixtral-8x7b-32768']
+let ms=ci.length?['llama-3.2-11b-vision-preview','llama-3.2-90b-vision-preview','llama-3.3-70b-versatile','llama-3.1-70b-versatile','llama-3.1-8b-instant','mixtral-8x7b-32768']:['llama-3.3-70b-versatile','llama-3.1-70b-versatile','llama-3.1-8b-instant','mixtral-8x7b-32768']
 let p=v;if(sMode)p+=" (Please search the web for this, and provide links/URLs to your sources so I can display them)"
 if(currM==='think')p="<thought>\n[Reasoning process...]\n</thought>\nThink Deeper Mode: Provide a highly detailed, step-by-step complex reasoning for: "+p
 if(currM==='study'){
@@ -961,7 +961,13 @@ const curC=[{type:'text',text:p}]
 ci.forEach(url=>curC.push({type:'image_url',image_url:{url}}))
 msg.push({role:'user',content:curC})
 for(const m of ms){
-try{const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{signal:ac.signal,method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${ak}`},body:JSON.stringify({model:m,messages:msg,max_tokens:4096})})
+const isV=m.includes('vision')
+const body={model:m,messages:isV?msg:msg.map(x=>{
+if(Array.isArray(x.content)) return {role:x.role,content:x.content.map(c=>c.type==='text'?c.text:'[Image Skipped]').join(' ')}
+return x
+}),max_tokens:4096}
+if(!isV&&ci.length) body.messages[body.messages.length-1].content = "[System: Image processing failed due to high traffic. Reply to the user's text as if you can't see the image.] " + p
+try{const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{signal:ac.signal,method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${ak}`},body:JSON.stringify(body)})
 if(r.ok){const j=await r.json();if(j.choices&&j.choices[0]){
 mc.removeChild(ld);
 const ans=j.choices[0].message.content;
@@ -975,7 +981,7 @@ return
 }}
 else{console.log(m,r.status)}}catch(e){if(e.name==='AbortError')return;console.log(e)}
 await new Promise(r=>setTimeout(r,1000))}
-endGen();add("Vision models are currently experiencing high traffic. Please try again in a moment.",true)}
+endGen();add("All models (Vision & Text) are currently unavailable. Please try again later.",true)}
 sb.onclick=run
 nb.onclick=createS
 pi.onkeydown=(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();run()}}
