@@ -432,7 +432,6 @@ function drop(e,tid,tfid,ttype){
 }
 function rendexp(){
 const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
-if(!u)return
 const l=document.getElementById('exp-l')
 l.innerHTML=''
 l.ondragover=allowdrop
@@ -759,7 +758,7 @@ b.textContent='Copied!';setTimeout(()=>b.textContent=old,2000)
 }
 function updT(t){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[curu].t=t;localStorage.setItem('us',JSON.stringify(us))
+us[currU].t=t;localStorage.setItem('us',JSON.stringify(us))
 document.body.className=t==='dark'?'':t
 document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on'))
 document.getElementById(`t-${t}`).classList.add('on')
@@ -768,7 +767,7 @@ function updP(e){
 const f=e.files[0];if(!f)return
 const r=new FileReader();r.onload=ev=>{
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[curu].pfp=ev.target.result;localStorage.setItem('us',JSON.stringify(us))
+us[currU].pfp=ev.target.result;localStorage.setItem('us',JSON.stringify(us))
 const p=document.getElementById('set-p'),up=document.getElementById('u-p')
 p.innerHTML=up.innerHTML=`<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:contain;background:#fff">`
 document.getElementById('pfp-x').style.display='flex'
@@ -777,9 +776,9 @@ render();switchS(sid)
 }
 function remPfp(){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-delete us[curu].pfp;localStorage.setItem('us',JSON.stringify(us))
+delete us[currU].pfp;localStorage.setItem('us',JSON.stringify(us))
 const p=document.getElementById('set-p'),up=document.getElementById('u-p')
-p.innerHTML=up.innerHTML=curu[0]
+p.innerHTML=up.innerHTML=currU[0]
 document.getElementById('pfp-x').style.display='none'
 render();switchS(sid)
 }
@@ -787,10 +786,10 @@ function togNav(){
 const s=document.getElementById('s'),o=document.querySelector('.ovl'),b=document.querySelector('.menu-btn')
 s.classList.toggle('open');o.classList.toggle('show');b.classList.toggle('hide',s.classList.contains('open'))
 }
-function togS(){smode=!smode;document.getElementById('t-s').classList.toggle('on',smode)}
+function togS(){sMode=!sMode;document.getElementById('t-s').classList.toggle('on',sMode)}
 function togMD(){const d=document.getElementById('m-drop');d.style.display=d.style.display==='flex'?'none':'flex'}
 function setM(m){
-curm=m;document.getElementById('m-drop').style.display='none'
+currM=m;document.getElementById('m-drop').style.display='none'
 document.getElementById('m-think').classList.toggle('on',m==='think')
 document.getElementById('m-study').classList.toggle('on',m==='study')
 document.getElementById('m-act').textContent=m?(m==='think'?'(Think)':'(Study)'):''
@@ -828,29 +827,29 @@ m.style.display='flex';if(v!==null)i.focus();a.onclick=()=>{cb(i.value);clsM()}
 }
 function clsM(){document.getElementById('mdl').style.display='none'}
 function save(){
-if(!curu)return
+if(!currU)return
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[curu].ss=ss;us[curu].sid=sid;us[curu].tm=tmpmode;us[curu].tms=tmpmsgs
+us[currU].ss=ss;us[currU].sid=sid;us[currU].tm=tmpMode;us[currU].tms=tmpMsgs
 try{localStorage.setItem('us',JSON.stringify(us))}catch(e){console.log('Full')}
 }
 function load(){
-if(!curu){
-const u=localStorage.getItem('curu')
-if(u)login(u);return
+if(!currU){
+const u=localStorage.getItem('currU')
+if(u)login(u),rendexp();return
 }
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-ss=us[curu].ss||[];sid=us[curu].sid||null;tmpmode=us[curu].tm||false;tmpmsgs=us[curu].tms||[]
-if(tmpmode){
+ss=us[currU].ss||[];sid=us[currU].sid||null;tmpMode=us[currU].tm||false;tmpMsgs=us[currU].tms||[]
+if(tmpMode){
 sid=null;mc.innerHTML=''
-if(tmpmsgs.length)tmpmsgs.forEach((m,i)=>add(m.t,m.is,false,i,m.ig))
+if(tmpMsgs.length)tmpMsgs.forEach((m,i)=>add(m.t,m.is,false,i,m.ig))
 else add('Temporary Chat Active. Messages here are not saved.',true,false)
 }else{
 if(ss.length){const s=ss.find(x=>x.id===sid);switchS(s?s.id:ss[0].id)}else createS()
 }
-render();rendexp()
+render()
 }
 function render(){
-ht.innerHTML='';if(tmpmode)tb.classList.add('tmp-on');else tb.classList.remove('tmp-on')
+ht.innerHTML='';if(tmpMode)tb.classList.add('tmp-on');else tb.classList.remove('tmp-on')
 ss.sort((a,b)=>(b.ts||parseInt(b.id))-(a.ts||parseInt(a.id)))
 const g={'Today':[],'Yesterday':[],'Previous 7 Days':[],'Previous 30 Days':[],'Older':[]}
 const n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime()
@@ -886,23 +885,23 @@ ht.appendChild(d)
 }
 function switchS(id){
 if(window.innerWidth<=768){document.getElementById('s').classList.remove('open');document.querySelector('.ovl').classList.remove('show')}
-if(!tmpmode&&sid&&sid!==id){
+if(!tmpMode&&sid&&sid!==id){
 const c=ss.find(x=>x.id===sid)
 if(c&&!c.msgs.length)ss=ss.filter(x=>x.id!==sid)
 }
-tmpmode=false;sid=id;save();render();mc.innerHTML=''
+tmpMode=false;sid=id;save();render();mc.innerHTML=''
 const s=ss.find(x=>x.id===id)
 if(s)s.msgs.forEach((m,i)=>add(m.t,m.is,false,i,m.ig))
 }
 function dm(i){
 if(gen)endGen()
-if(tmpmode){tmpmsgs.splice(i);save();mc.innerHTML='';tmpmsgs.forEach((m,idx)=>add(m.t,m.is,false,idx,m.ig))}else{
+if(tmpMode){tmpMsgs.splice(i);save();mc.innerHTML='';tmpMsgs.forEach((m,idx)=>add(m.t,m.is,false,idx,m.ig))}else{
 const s=ss.find(x=>x.id===sid)
 s.msgs.splice(i)
 save();switchS(sid)}
 }
 function em(i){
-const m=tmpmode?tmpmsgs[i]:ss.find(x=>x.id===sid).msgs[i]
+const m=tmpMode?tmpMsgs[i]:ss.find(x=>x.id===sid).msgs[i]
 pi.value=m.t;pi.style.height='auto';pi.style.height=pi.scrollHeight+'px';if(m.ig){
 imgs=Array.isArray(m.ig)?[...m.ig]:[m.ig]
 updPv()
@@ -910,17 +909,17 @@ updPv()
 dm(i);pi.focus()
 }
 function createS(){
-if(!tmpmode&&sid){
+if(!tmpMode&&sid){
 const c=ss.find(x=>x.id===sid)
 if(c&&!c.msgs.length)ss=ss.filter(x=>x.id!==sid)
 }
-if(ss.length&&!ss[0].msgs.length){tmpmode=false;sid=ss[0].id;save();render();switchS(sid);return}
-tmpmode=false;const s={id:Date.now().toString(),ts:Date.now(),title:'New Chat',msgs:[]}
+if(ss.length&&!ss[0].msgs.length){tmpMode=false;sid=ss[0].id;save();render();switchS(sid);return}
+tmpMode=false;const s={id:Date.now().toString(),ts:Date.now(),title:'New Chat',msgs:[]}
 ss.unshift(s);sid=s.id;save();render();mc.innerHTML=''
 }
 function createTmp(){
 if(window.innerWidth<=768){document.getElementById('s').classList.remove('open');document.querySelector('.ovl').classList.remove('show')}
-tmpmode=true;sid=null;tmpmsgs=[];mc.innerHTML='';save();render()
+tmpMode=true;sid=null;tmpMsgs=[];mc.innerHTML='';save();render()
 pi.value='';pi.style.height='auto';pi.focus();if(gen)endGen()
 add('Temporary Chat Active. Messages here are not saved.',true,false)
 }
@@ -985,8 +984,8 @@ function subQ(qid, qi, ci) {
   qb.querySelector('.qz-f').appendChild(nextBtn);
 }
 function prs(t,isG=false,tm=0,showP=false){
-  const u=JSON.parse(localStorage.getItem('us')||'{}')[curu],ce=u.ce!==false,qi=u.qi!==false
-  if(curm==='study'&&qi&&isG&&t.includes('[QUIZ]')){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU],ce=u.ce!==false,qi=u.qi!==false
+  if(currM==='study'&&qi&&isG&&t.includes('[QUIZ]')){
     const qAI=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2.7 3 6 3s6-1 6-3v-5"/></svg>`
     return `<div class="coding">${qAI}<span>Generating interactive quiz...</span></div>`
   }
@@ -1043,7 +1042,7 @@ if(g)return g
 u=u.replace(/[.,!?;:]+$/,'')
 try{const n=new URL(u).hostname;return `<a href="${u}" target="_blank" class="src"><img src="https://www.google.com/s2/favicons?domain=${n}"> ${n}</a>`}catch(e){return u}
 })
-const uo=JSON.parse(localStorage.getItem('us')||'{}')[curu]
+const uo=JSON.parse(localStorage.getItem('us')||'{}')[currU]
 if(uo&&uo.exp){
 uo.exp.forEach(i=>{
 const r=new RegExp(`#${i.n}\\b`,'g')
@@ -1061,11 +1060,11 @@ return h.replace(/\n/g,'<br>')
 function add(t,is,upd=true,i=null,ig=null){
 const d=document.createElement('div');d.className='msg'
 if(t.includes('Temporary Chat Active'))d.classList.add('sys-msg')
-const idx=i!==null?i:(tmpmode?tmpmsgs.length:ss.find(x=>x.id===sid).msgs.length)
+const idx=i!==null?i:(tmpMode?tmpMsgs.length:ss.find(x=>x.id===sid).msgs.length)
 const dAI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 9V5"/><path d="M12 19v-4"/><path d="M19 12h-4"/><path d="M9 12H5"/><path d="M17.5 7.5L15 10"/><path d="M6.5 16.5L9 14"/><path d="M17.5 16.5L15 14"/><path d="M6.5 7.5L9 10"/></svg>`
 const qAI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2.7 3 6 3s6-1 6-3v-5"/></svg>`
-const uo = JSON.parse(localStorage.getItem('us')||'{}') , us = uo[curu] || {inst:false,sn:true} , ail = curm==='study'?qAI:dAI
-const pfp=us.pfp?`<img src="${us.pfp}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:curu[0]
+const uo = JSON.parse(localStorage.getItem('us')||'{}') , us = uo[currU] || {inst:false,sn:true} , ail = currM==='study'?qAI:dAI
+const pfp=us.pfp?`<img src="${us.pfp}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:currU[0]
 d.innerHTML=`<div class="avatar ${is?'a':'u'}">${is?ail:pfp}</div><div class="txt"></div><div class="actions">${!is?`<div class="btn" onclick="em(${idx})" data-tip="Edit message"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="btn" onclick="dm(${idx})" data-tip="Delete message"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>`:''}</div>`
 mc.appendChild(d);const tx=d.querySelector('.txt');let autoS=true
 mc.onscroll=()=>{const atB=mc.scrollHeight-mc.scrollTop-mc.clientHeight<50;autoS=atB;document.getElementById('down').style.display=atB?'none':'flex'}
@@ -1074,7 +1073,7 @@ const sp=document.createElement('div');tx.appendChild(sp)
 let mo=null
 if(upd){
  mo={t:is?'':t,is,ig}
- if(tmpmode)tmpmsgs.push(mo)
+ if(tmpMode)tmpMsgs.push(mo)
  else{const s=ss.find(x=>x.id===sid);if(s){s.msgs.push(mo);s.ts=Date.now();if(!is)render()}}
  save()
 }
@@ -1084,15 +1083,15 @@ endGen();if(us.sn!==false)playSn()
 if(t.includes('```')&&curscr){
 const code=t.match(/```(?:\w*)\n([\s\S]*?)```/)?.[1]
 if(code)showM('Apply Script?',null,(y)=>{
-const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
+const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
 let s;  if(curfld){const f=u.exp.find(x=>x.id===curfld);s=f.c.find(x=>x.id===curscr)}else s=u.exp.find(x=>x.id===curscr)
-if(s){s.v=code;  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}))}
+if(s){s.v=code;  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}))}
 },false,'AI generated a script. Apply to current file?')
 }
 };if(is&&upd)render()
 }
 if(!is||!upd){sp.innerHTML=prs(t);fin()}else if(us.inst){sp.innerHTML=prs(t);fin()}else{
-const av=d.querySelector('.avatar.a');if(av)av.classList.add(curm==='think'?'thinking':'pulsing')
+const av=d.querySelector('.avatar.a');if(av)av.classList.add(currM==='think'?'thinking':'pulsing')
 let st=Date.now(),tm=0
 ty=setInterval(()=>{
 const el=Date.now()-st,i=Math.floor(el/15)
@@ -1132,19 +1131,19 @@ if(!ak){setTimeout(()=>{add("No API Key!",true);endGen()},500);return}
 const ld=document.createElement('div')
 const dAI=`<svg class="pulsing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 9V5"/><path d="M12 19v-4"/><path d="M19 12h-4"/><path d="M9 12H5"/><path d="M17.5 7.5L15 10"/><path d="M6.5 16.5L9 14"/><path d="M17.5 16.5L15 14"/><path d="M6.5 7.5L9 10"/></svg>`
 const qAI=`<svg class="pulsing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2.7 3 6 3s6-1 6-3v-5"/></svg>`
-const ail=curm==='study'?qAI:dAI
+const ail=currM==='study'?qAI:dAI
 ld.className='msg';ld.id='loading';ld.innerHTML=`<div class="avatar a">${ail}</div><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`
 mc.appendChild(ld);mc.scrollTop=mc.scrollHeight
 let ms=ci.length?['llama-3.2-11b-vision-preview','llama-3.2-90b-vision-preview','llama-3.3-70b-versatile','llama-3.1-70b-versatile','llama-3.1-8b-instant','mixtral-8x7b-32768']:['llama-3.3-70b-versatile','llama-3.1-70b-versatile','llama-3.1-8b-instant','mixtral-8x7b-32768']
-let p=v;if(smode)p+=" (Please search the web for this, and provide links/URLs to your sources so I can display them)"
-if(curm==='think')p="<thought>\n[Reasoning process...]\n</thought>\nThink Deeper Mode: Provide a highly detailed, step-by-step complex reasoning for: "+p
-if(curm==='study'){
+let p=v;if(sMode)p+=" (Please search the web for this, and provide links/URLs to your sources so I can display them)"
+if(currM==='think')p="<thought>\n[Reasoning process...]\n</thought>\nThink Deeper Mode: Provide a highly detailed, step-by-step complex reasoning for: "+p
+if(currM==='study'){
   const isq=/\b(quiz|test|exam|assessment|questions|ask me)\b/i.test(v)
   if(isq)p="Study Mode: Generate a JSON quiz inside [QUIZ] tags. Format: [QUIZ]{\"questions\":[{\"q\":\"q\",\"o\":[\"a\",\"b\",\"c\",\"d\"],\"a\":0,\"e\":\"exp\"}]} [/QUIZ]. Only return the quiz inside tags for: "+p
   else p="Study Mode: You are a tutor. Explain the topic clearly. If the user wants a quiz, they will ask. Topic: "+p
 }
-const msgsToUse=tmpmode?tmpmsgs:(ss.find(x=>x.id===sid)?.msgs||[])
-const msg=[],u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
+const msgsToUse=tmpMode?tmpMsgs:(ss.find(x=>x.id===sid)?.msgs||[])
+const msg=[],u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
 if(u.sp)msg.push({role:'system',content:u.sp})
 if(u.ps)u.ps.forEach(p=>{
 if(p.u)msg.push({role:'user',content:p.u})
@@ -1177,7 +1176,7 @@ mc.removeChild(ld);
 const ans=j.choices[0].message.content;
 add(ans,true);
 updTks();
-if(!tmpmode){
+if(!tmpMode){
 const s=ss.find(x=>x.id===sid);
 if(s&&s.title==='New Chat')genTitle(sid,v,ans);
 }
@@ -1202,7 +1201,7 @@ pi.oninput=()=>{
 pi.style.height='auto';  pi.style.height=pi.scrollHeight+'px'
 const v=pi.value,p=pi.selectionStart,t=v.substring(0,p),m=t.match(/#(\w*)$/)
 if(m){
-const q=m[1].toLowerCase(),u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
+const q=m[1].toLowerCase(),u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
 aco=[];if(u.exp)u.exp.forEach(i=>{
 if(i.t==='scr'&&i.n.toLowerCase().includes(q))aco.push(i)
 if(i.t==='fld'&&i.c)i.c.forEach(s=>{if(s.n.toLowerCase().includes(q))aco.push({...s,f:i.id})})
