@@ -90,7 +90,7 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
 .srcs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px}
 .citation{display:inline-block;padding:2px 6px;background:var(--h-bg);border:1px solid var(--b-c);border-radius:4px;font-size:11px;font-weight:700;color:var(--t-c);margin:0 2px;cursor:pointer;text-decoration:none;transition:background 0.2s}
 .citation:hover{background:var(--b-c)}
-.src{display:flex;align-items:center;gap:5px;background:var(--s-bg);padding:4px 8px;border-radius:12px;text-decoration:none;color:var(--t-c);border:1px solid #565869}
+.src{display:inline-flex;align-items:center;gap:5px;background:var(--s-bg);padding:4px 8px;border-radius:12px;text-decoration:none;color:var(--t-c);border:1px solid #565869;margin:2px 0;vertical-align:middle}
 .src:hover{background:var(--h-bg)}
 .src img{width:14px;height:14px;border-radius:2px}
 #prev{display:none;gap:10px;padding:10px;margin:10px;flex-wrap:wrap}
@@ -821,6 +821,10 @@ h=h.replace(/^### (.*$)/gim,'<h3>$1</h3>').replace(/###(.*?)###/g,'<h3>$1</h3>')
  h=h.replace(/^## (.*$)/gim,'<h2>$1</h2>').replace(/##(.*?)##/g,'<h2>$1</h2>')
   h=h.replace(/^# (.*$)/gim,'<h1>$1</h1>').replace(/#(.*?)#/g,'<h1>$1</h1>')
 h=h.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')
+h=h.replace(/(<[^>]+>)|(https?:\/\/[^\s<)]+)/g,(m,g,u)=>{
+if(g)return g
+try{const n=new URL(u).hostname;return `<a href="${u}" target="_blank" class="src"><img src="https://www.google.com/s2/favicons?domain=${n}"> ${n}</a>`}catch(e){return u}
+})
 return h.replace(/\n/g,'<br>')
 }
 function add(t,is,upd=true,i=null,ig=null){
