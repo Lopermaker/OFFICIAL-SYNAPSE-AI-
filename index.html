@@ -249,16 +249,16 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 <span>Synapse</span>
 </div>
 <div id="new" data-tip="Start a new conversation">+ New chat</div>
-<div id="tmp" onclick="createtmp()" data-tip="Chat without saving history"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22V11a6 6 0 0 0-12 0v11l1.5-1.5L9 22z"/><path d="M10 9h.01"/><path d="M14 9h.01"/></svg> Temporary</div>
+<div id="tmp" onclick="createTmp()" data-tip="Chat without saving history"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22V11a6 6 0 0 0-12 0v11l1.5-1.5L9 22z"/><path d="M10 9h.01"/><path d="M14 9h.01"/></svg> Temporary</div>
 <div id="exp-b" onclick="togexp()" data-tip="Scripting Explorer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg> Explorer</div>
-<div id="exp" ondragover="event.preventDefault()" ondrop="movexp(event.dataTransfer.getData('id'),null,event.dataTransfer.getData('type'))">
+<div id="exp">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 10px 10px;font-size:11px;font-weight:700;color:var(--t-s);text-transform:uppercase;letter-spacing:0.5px">
 <span>Explorer</span>
 <div style="display:flex;gap:8px">
 <div class="btn" onclick="addfld()" data-tip="New Folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg></div>
 <div class="btn" onclick="addscr()" data-tip="New Script"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
 </div>
-</div> 
+</div>
 <div id="exp-l" style="flex:1;overflow-y:auto;padding:0 5px"></div>
 </div>
 <div id="hist"></div>
@@ -358,67 +358,110 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 <script>
 const mc=document.getElementById('msgs'),pi=document.getElementById('p'),sb=document.getElementById('send'),nb=document.getElementById('new'),ht=document.getElementById('hist'),tb=document.getElementById('tmp'),acl=document.getElementById('ac-l')
-let ak='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',sid=null,ss=[],ac=null,ty=null,gen=false,imgs=[],smode=false,curm=null,curu=null,isl=true,isb=false,tmpmode=false,tmpmsgs=[],ttt,aci=-1,aco=[],curscr=null,curfld=null
+let ak='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',sid=null,ss=[],ac=null,ty=null,gen=false,imgs=[],sMode=false,currM=null,currU=null,isL=true,isB=false,tmpMode=false,tmpMsgs=[],ttT,aci=-1,aco=[],curscr=null,curfld=null
 document.addEventListener('mouseover',e=>{
 const el=e.target.closest('[data-tip]')
-if(el){clearTimeout(ttt);ttt=setTimeout(()=>{const tt=document.getElementById('tt');tt.textContent=el.getAttribute('data-tip');tt.style.display='block';tt.style.left=e.clientX+'px';tt.style.top=e.clientY+'px'},100)}
+if(el){clearTimeout(ttT);ttT=setTimeout(()=>{const tt=document.getElementById('tt');tt.textContent=el.getAttribute('data-tip');tt.style.display='block';tt.style.left=e.clientX+'px';tt.style.top=e.clientY+'px'},100)}
 })
 document.addEventListener('mousemove',e=>{const tt=document.getElementById('tt');if(tt.style.display==='block'){tt.style.left=e.clientX+'px';tt.style.top=e.clientY+'px'}})
 document.addEventListener('mouseout',e=>{
 const el=e.target.closest('[data-tip]')
-if(el&&(!e.relatedTarget||!el.contains(e.relatedTarget))){clearTimeout(ttt);document.getElementById('tt').style.display='none'}
+if(el&&(!e.relatedTarget||!el.contains(e.relatedTarget))){clearTimeout(ttT);document.getElementById('tt').style.display='none'}
 })
-document.addEventListener('mousedown',()=>{clearTimeout(ttt);document.getElementById('tt').style.display='none'})
+document.addEventListener('mousedown',()=>{clearTimeout(ttT);document.getElementById('tt').style.display='none'})
+let dragsrc=null
 function togexp(){
 const exp=document.getElementById('exp')
-const expb=document.getElementById('exp-b')
+const expB=document.getElementById('exp-b')
 exp.style.display=exp.style.display==='flex'?'none':'flex'
-expb.classList.toggle('active')
+expB.classList.toggle('active')
 }
 function addfld(){
-  const u=JSON.parse(localStorage.getItem('us')||'{}')[curu];
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
   if(!u.exp)u.exp=[];
-  const n=prompt('Folder Name:');
-  if(!n)return;
-  u.exp.push({id:Date.now(),t:'fld',n:n,c:[]});
-  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}));
+  const name=prompt('Folder Name:');
+  if(!name)return;
+  u.exp.push({id:Date.now(),t:'fld',n:name,c:[]});
+  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}));
   rendexp();
 }
 function addscr(fid=null){
-  const u=JSON.parse(localStorage.getItem('us')||'{}')[curu];
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
   if(!u.exp)u.exp=[];
-  const n=prompt('Script Name:');
-  if(!n)return;
-  const s={id:Date.now(),t:'scr',n:n,v:''};
+  const name=prompt('Script Name:');
+  if(!name)return;
+  const s={id:Date.now(),t:'scr',n:name,v:''};
   if(fid){
     const f=u.exp.find(x=>x.id===fid);
     if(f)f.c.push(s);
   }else u.exp.push(s);
-  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}));
+  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}));
   rendexp();
 }
+function renexp(id,fid=null){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+  let item,p
+  if(fid){p=u.exp.find(x=>x.id===fid);item=p.c.find(x=>x.id===id)}
+  else item=u.exp.find(x=>x.id===id)
+  const n=prompt('Rename:',item.n)
+  if(n){
+    item.n=n
+    localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}))
+    rendexp()
+    if(curscr===id)edscr(id,fid)
+  }
+}
+function drag(e,id,fid,t){e.stopPropagation();dragsrc={id,fid,t};e.target.style.opacity='0.4'}
+function allowdrop(e){e.preventDefault();const el=e.target.closest('.item');if(el)el.style.background='rgba(124, 58, 237, 0.1)'}
+function dragleave(e){const el=e.target.closest('.item');if(el)el.style.background=''}
+function drop(e,tid,tfid,ttype){
+  e.preventDefault();e.stopPropagation()
+  const el=e.target.closest('.item');if(el)el.style.background=''
+  if(!dragsrc||dragsrc.id===tid)return
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+  let item,p
+  if(dragsrc.fid){p=u.exp.find(x=>x.id===dragsrc.fid);const idx=p.c.findIndex(x=>x.id===dragsrc.id);item=p.c.splice(idx,1)[0]}
+  else{const idx=u.exp.findIndex(x=>x.id===dragsrc.id);item=u.exp.splice(idx,1)[0]}
+  if(ttype==='fld'){const f=u.exp.find(x=>x.id===tid);if(!f.c)f.c=[];f.c.push(item)}
+  else if(ttype==='root'){u.exp.push(item)}
+  else if(ttype==='scr'){if(tfid){const f=u.exp.find(x=>x.id===tfid);f.c.push(item)}else{u.exp.push(item)}}
+  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}))
+  rendexp();dragsrc=null
+}
 function rendexp(){
-const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
+const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
 const l=document.getElementById('exp-l')
 l.innerHTML=''
+l.ondragover=allowdrop
+l.ondrop=(e)=>drop(e,null,null,'root')
 if(!u.exp)return
 u.exp.forEach(i=>{
 const d=document.createElement('div')
-d.className='item'; d.draggable=true
-d.style.padding='6px 10px'; d.style.margin='0'; d.style.borderRadius='4px'
-d.ondragstart=e=>{e.dataTransfer.setData('id',i.id);e.dataTransfer.setData('type',i.t)}
-d.ondragover=e=>e.preventDefault()
-d.ondrop=e=>{e.stopPropagation();movexp(e.dataTransfer.getData('id'),i.t==='fld'?i.id:null,e.dataTransfer.getData('type'))}
-d.innerHTML=i.t==='fld'?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.n}</span> <div style="display:flex;gap:4px"><div class="dots" onclick="event.stopPropagation();addscr(${i.id})" data-tip="Add script"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div><div class="dots" onclick="event.stopPropagation();delexp(${i.id})" data-tip="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.n}</span> <div class="dots" onclick="event.stopPropagation();delexp(${i.id})" data-tip="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div>`
+d.className='item'
+d.draggable=true
+d.ondragstart=(e)=>drag(e,i.id,null,i.t)
+d.ondragover=allowdrop
+d.ondragleave=dragleave
+d.ondrop=(e)=>drop(e,i.id,null,i.t)
+d.style.padding='6px 10px'
+d.style.margin='0'
+d.style.borderRadius='4px'
+d.innerHTML=i.t==='fld'?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.n}</span> <div style="display:flex;gap:4px"><div class="dots" onclick="event.stopPropagation();addscr(${i.id})" data-tip="Add script"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div><div class="dots" onclick="event.stopPropagation();renexp(${i.id})" data-tip="Rename"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="dots" onclick="event.stopPropagation();delexp(${i.id})" data-tip="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.n}</span> <div style="display:flex;gap:4px"><div class="dots" onclick="event.stopPropagation();renexp(${i.id})" data-tip="Rename"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="dots" onclick="event.stopPropagation();delexp(${i.id})" data-tip="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>`
 if(i.t==='scr')d.onclick=()=>edscr(i.id)
 l.appendChild(d)
 if(i.t==='fld'&&i.c){
 i.c.forEach(s=>{
 const sd=document.createElement('div')
-sd.className='item'; sd.draggable=true
-sd.style.padding='6px 10px 6px 25px'; sd.style.margin='0'; sd.style.borderRadius='4px'
-sd.ondragstart=e=>{e.dataTransfer.setData('id',s.id);e.dataTransfer.setData('type','scr')}
-sd.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.n}</span> <div class="dots" onclick="event.stopPropagation();delexp(${s.id},${i.id})" data-tip="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div>`
+sd.className='item'
+sd.draggable=true
+sd.ondragstart=(e)=>drag(e,s.id,i.id,s.t)
+sd.ondragover=allowdrop
+sd.ondragleave=dragleave
+sd.ondrop=(e)=>drop(e,s.id,i.id,s.t)
+sd.style.padding='6px 10px 6px 25px'
+sd.style.margin='0'
+sd.style.borderRadius='4px'
+sd.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.n}</span> <div style="display:flex;gap:4px"><div class="dots" onclick="event.stopPropagation();renexp(${s.id},${i.id})" data-tip="Rename"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="dots" onclick="event.stopPropagation();delexp(${s.id},${i.id})" data-tip="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>`
 sd.onclick=()=>edscr(s.id,i.id)
 l.appendChild(sd)
 })
@@ -427,38 +470,17 @@ l.appendChild(sd)
 }
 function delexp(id,fid=null){
 if(!confirm('Delete this item?'))return
-const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
+const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
 if(fid){
 const f=u.exp.find(x=>x.id===fid)
 if(f)f.c=f.c.filter(x=>x.id!==id)
 }else u.exp=u.exp.filter(x=>x.id!==id)
-localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}))
+localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}))
 rendexp()
 if(curscr===id)cled()
 }
-function movexp(id,tid,type){
-const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
-let item,pf=null;  id=parseInt(id); tid=tid?parseInt(tid):null
-u.exp.forEach((i,idx)=>{
-if(i.id===id){item=u.exp.splice(idx,1)[0]}
-else if(i.t==='fld'&&i.c){
-const sidx=i.c.findIndex(x=>x.id===id)
-if(sidx!==-1){item=i.c.splice(sidx,1)[0];pf=i}
-}
-})
-if(!item)return
-if(tid){
-const f=u.exp.find(x=>x.id===tid)
-if(f&&f.t==='fld'){
-if(item.t==='fld'){alert('Cannot nest folders yet');u.exp.push(item)}
-else f.c.push(item)
-}
-}else u.exp.push(item)
-localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}))
-rendexp()
-}
 function edscr(sid,fid=null){
-const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
+const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
 let s,p=null
 curscr=sid;  curfld=fid
 if(fid){p=u.exp.find(x=>x.id===fid);s=p.c.find(x=>x.id===sid)}
@@ -466,10 +488,10 @@ else s=u.exp.find(x=>x.id===sid)
 const ed=document.getElementById('ed'),tv=document.getElementById('ed-v'),th=document.getElementById('ed-t'),sb=document.getElementById('ed-s')
 ed.style.display='flex';  setTimeout(()=>ed.style.width='50%',10)
 tv.value=s.v
-th.innerHTML=`<span style="opacity:0.6">#</span> <span>${p?p.n+' <span style="opacity:0.4">></span> ':''}${s.n}</span>`
+th.innerHTML=`<span style="opacity:0.6">#</span> <span onclick="renexp(${s.id},${fid})" style="cursor:pointer" data-tip="Click to rename">${p?p.n+' <span style="opacity:0.4">></span> ':''}${s.n}</span>`
 sb.onclick=()=>{
 s.v=tv.value
-localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}))
+localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}))
 cled()
 }
 }
@@ -1022,11 +1044,11 @@ const uo=JSON.parse(localStorage.getItem('us')||'{}')[currU]
 if(uo&&uo.exp){
 uo.exp.forEach(i=>{
 const r=new RegExp(`#${i.n}\\b`,'g')
-h=h.replace(r,`<span class="s-m" onclick="edScr(${i.id})">#${i.n}</span>`)
+h=h.replace(r,`<span class="s-m" onclick="edscr(${i.id})">#${i.n}</span>`)
 if(i.t==='fld'&&i.c){
 i.c.forEach(s=>{
 const sr=new RegExp(`#${s.n}\\b`,'g')
-h=h.replace(sr,`<span class="s-m" onclick="edScr(${s.id},${i.id})">#${s.n}</span>`)
+h=h.replace(sr,`<span class="s-m" onclick="edscr(${s.id},${i.id})">#${s.n}</span>`)
 })
 }
 })
