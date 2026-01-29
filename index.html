@@ -215,7 +215,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 <button class="auth-btn" id="a-b" onclick="auth()">Login</button>
 <div class="auth-t" id="a-t" onclick="togA()">Don't have an account? <span>Sign up</span></div>
-<div style="margin-top:15px;font-size:12px;color:var(--t-s)">Lost your password? Use your <span style="color:var(--a-c)">Backup Code</span> to login.</div>
+<div style="margin-top:15px;font-size:12px;color:var(--t-s);cursor:pointer" id="a-b-l" onclick="togB()">Lost your password? Use your <span style="color:var(--a-c)">Backup Code</span></div>
 </div>
 </div>
 <div id="s">
@@ -313,7 +313,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 <script>
 const mc=document.getElementById('msgs'),pi=document.getElementById('p'),sb=document.getElementById('send'),nb=document.getElementById('new'),ht=document.getElementById('hist'),tb=document.getElementById('tmp')
-let ak='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',sid=null,ss=[],ac=null,ty=null,gen=false,imgs=[],sMode=false,currM=null,currU=null,isL=true,tmpMode=false,tmpMsgs=[],ttT
+let ak='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',sid=null,ss=[],ac=null,ty=null,gen=false,imgs=[],sMode=false,currM=null,currU=null,isL=true,isB=false,tmpMode=false,tmpMsgs=[],ttT
 document.addEventListener('mouseover',e=>{
 const el=e.target.closest('[data-tip]')
 if(el){clearTimeout(ttT);ttT=setTimeout(()=>{const tt=document.getElementById('tt');tt.textContent=el.getAttribute('data-tip');tt.style.display='block';tt.style.left=e.clientX+'px';tt.style.top=e.clientY+'px'},100)}
@@ -325,9 +325,23 @@ if(el&&(!e.relatedTarget||!el.contains(e.relatedTarget))){clearTimeout(ttT);docu
 })
 document.addEventListener('mousedown',()=>{clearTimeout(ttT);document.getElementById('tt').style.display='none'})
 function togA(){
-isL=!isL;document.getElementById('a-h').textContent=isL?'Login':'Sign Up'
+isL=!isL;isB=false
+document.getElementById('a-h').textContent=isL?'Login':'Sign Up'
 document.getElementById('a-b').textContent=isL?'Login':'Sign Up'
 document.getElementById('a-t').innerHTML=isL?"Don't have an account? <span>Sign up</span>":"Already have an account? <span>Login</span>"
+document.querySelector('.auth-p').style.display='block'
+document.getElementById('a-u').placeholder=isL?'Username':'Create Username'
+document.getElementById('a-b-l').style.display=isL?'block':'none'
+document.getElementById('a-e').style.display='none'
+}
+function togB(){
+isB=!isB;isL=true
+document.getElementById('a-h').textContent=isB?'Backup Login':'Login'
+document.getElementById('a-b').textContent=isB?'Verify Code':'Login'
+document.querySelector('.auth-p').style.display=isB?'none':'block'
+document.getElementById('a-u').placeholder=isB?'Enter 10-character Backup Code':'Username'
+document.getElementById('a-t').style.display=isB?'none':'block'
+document.getElementById('a-b-l').innerHTML=isB?'Back to <span>Password Login</span>':'Lost your password? Use your <span>Backup Code</span>'
 document.getElementById('a-e').style.display='none'
 }
 function togP(){
@@ -340,13 +354,14 @@ function gBid(){return Math.random().toString(36).substring(2,12).toUpperCase()}
 function auth(){
 const u=document.getElementById('a-u').value.trim(),p=document.getElementById('a-p').value.trim()
 document.getElementById('a-e').style.display='none'
-if(!u)return aErr('Please enter a username or backup code')
+if(!u)return aErr(isB?'Please enter your backup code':'Please enter a username')
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-if(isL){
-if(!p){
+if(isB){
 const k=Object.keys(us).find(x=>us[x].bid===u.toUpperCase())
 if(k)return login(k)
+return aErr('Invalid backup code')
 }
+if(isL){
 if(us[u]&&us[u].p===p){login(u)}else aErr('Invalid username or password')
 }else{
 if(!p)return aErr('Please enter a password')
