@@ -128,6 +128,9 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
 .auth-c{background:var(--s-bg);padding:40px;border-radius:12px;width:100%;max-width:400px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.5);border:1px solid var(--b-c)}
 .auth-c h2{margin-bottom:25px;font-size:24px;font-weight:600}
 .auth-e{color:#ff4b4b;font-size:13px;margin-bottom:20px;display:none;background:rgba(255,75,75,0.1);padding:12px;border-radius:6px;border:1px solid rgba(255,75,75,0.2);text-align:left}
+#a-b-l:hover{color:var(--t-c)!important}#a-b-l:hover span{text-decoration:underline}
+.auth-u{position:relative;width:100%}
+.auth-u .eye{display:none}
 .auth-c input{width:100%;background:var(--m-bg);border:1px solid #565869;color:var(--t-c);padding:14px;border-radius:8px;margin-bottom:15px;outline:none;box-sizing:border-box;font-size:15px}
 .auth-c input:focus{border-color:var(--a-c);box-shadow:0 0 0 2px rgba(16,163,127,0.2)}
 .auth-p{position:relative;  width:100%;margin-bottom:15px}
@@ -205,7 +208,13 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 <div class="auth-c">
 <h2 id="a-h">Login</h2>
 <div id="a-e" class="auth-e"></div>
+<div class="auth-u">
 <input type="text" id="a-u" placeholder="Username or Backup Code">
+<div class="eye" id="u-eye" onclick="togP('a-u','u-eye-o','u-eye-c')">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="u-eye-o"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="u-eye-c" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+</div>
+</div>
 <div class="auth-p">
 <input type="password" id="a-p" placeholder="Password">
 <div class="eye" onclick="togP()">
@@ -300,7 +309,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
         </div>
 
         <div id="c-data" class="tab-content">
-              <div class="set-o"><label>Backup Code</label><div style="display:flex;gap:10px;margin-bottom:10px;background:var(--m-bg);padding:10px;border-radius:5px;border:1px solid var(--b-c);align-items:center;justify-content:space-between"><span id="bid-v" style="font-family:monospace;font-weight:700;letter-spacing:1px;color:var(--a-c)"></span><button class="mdl-btn mdl-cn" onclick="cpyB()" style="padding:5px 10px;font-size:12px">Copy</button></div><p style="font-size:11px;color:var(--t-s);margin-bottom:15px">Use this 10-character code to log back into your account from the login screen.</p><div class="sw-c" style="border-color:#ff4b4b;justify-content:center;background:rgba(255,75,75,0.15)" onclick="resetAll()"><div style="font-size:13px;color:#d93025;font-weight:700">FACTORY RESET (DELETE ALL CHATS)</div></div></div>
+              <div class="set-o"><label>Backup Code</label><div style="display:flex;gap:10px;margin-bottom:10px;background:var(--m-bg);padding:10px;border-radius:5px;border:1px solid var(--b-c);align-items:center;justify-content:space-between;position:relative"><span id="bid-v" style="font-family:monospace;font-weight:700;letter-spacing:1px;color:var(--a-c);-webkit-text-security:disc"></span><div style="display:flex;gap:10px;align-items:center"><div class="eye" style="position:static;transform:none" onclick="togBv()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="b-eye-o"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="b-eye-c" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></div><button class="mdl-btn mdl-cn" onclick="cpyB()" style="padding:5px 10px;font-size:12px">Copy</button></div></div><p style="font-size:11px;color:var(--t-s);margin-bottom:15px">Use this 10-character code to log back into your account from the login screen.</p><div class="sw-c" style="border-color:#ff4b4b;justify-content:center;background:rgba(255,75,75,0.15)" onclick="resetAll()"><div style="font-size:13px;color:#d93025;font-weight:700">FACTORY RESET (DELETE ALL CHATS)</div></div></div>
           </div>
 
         <div id="c-own" class="tab-content">
@@ -330,7 +339,9 @@ document.getElementById('a-h').textContent=isL?'Login':'Sign Up'
 document.getElementById('a-b').textContent=isL?'Login':'Sign Up'
 document.getElementById('a-t').innerHTML=isL?"Don't have an account? <span>Sign up</span>":"Already have an account? <span>Login</span>"
 document.querySelector('.auth-p').style.display='block'
-document.getElementById('a-u').placeholder=isL?'Username':'Create Username'
+document.getElementById('u-eye').style.display='none'
+const u=document.getElementById('a-u')
+u.style.webkitTextSecurity='none';u.placeholder=isL?'Username':'Create Username'
 document.getElementById('a-b-l').style.display=isL?'block':'none'
 document.getElementById('a-e').style.display='none'
 }
@@ -339,15 +350,36 @@ isB=!isB;isL=true
 document.getElementById('a-h').textContent=isB?'Backup Login':'Login'
 document.getElementById('a-b').textContent=isB?'Verify Code':'Login'
 document.querySelector('.auth-p').style.display=isB?'none':'block'
-document.getElementById('a-u').placeholder=isB?'Enter 10-character Backup Code':'Username'
+document.getElementById('u-eye').style.display=isB?'flex':'none'
+const u=document.getElementById('a-u')
+u.style.webkitTextSecurity=isB?'disc':'none'
+u.placeholder=isB?'Enter 10-character Backup Code':'Username'
+u.value=''
+document.getElementById('u-eye-o').style.display='block'
+document.getElementById('u-eye-c').style.display='none'
 document.getElementById('a-t').style.display=isB?'none':'block'
 document.getElementById('a-b-l').innerHTML=isB?'Back to <span>Password Login</span>':'Lost your password? Use your <span>Backup Code</span>'
 document.getElementById('a-e').style.display='none'
 }
-function togP(){
-const pass=document.getElementById('a-p'),show=document.getElementById('eye-o'),hide=document.getElementById('eye-c')
-if(pass.type==='password'){  pass.type='text';show.style.display='none';hide.style.display='block'}
-else{  pass.type='password';show.style.display='block';hide.style.display='none'}
+function togP(i='a-p',o='eye-o',c='eye-c'){
+const p=document.getElementById(i),so=document.getElementById(o),hc=document.getElementById(c)
+if(p.type==='password'||p.type==='text'&&p.id==='a-u'&&isB){
+const isH=p.type==='password'||(p.id==='a-u'&&p.style.webkitTextSecurity==='disc')
+if(isH){
+if(p.id==='a-u'){p.style.webkitTextSecurity='none'}else{p.type='text'}
+so.style.display='none';hc.style.display='block'
+}else{
+if(p.id==='a-u'){p.style.webkitTextSecurity='disc'}else{p.type='password'}
+so.style.display='block';hc.style.display='none'
+}
+}
+}
+function togBv(){
+const v=document.getElementById('bid-v'),o=document.getElementById('b-eye-o'),c=document.getElementById('b-eye-c')
+const isH=v.style.webkitTextSecurity==='disc'
+v.style.webkitTextSecurity=isH?'none':'disc'
+o.style.display=isH?'none':'block'
+c.style.display=isH?'block':'none'
 }
 function aErr(m){const e=document.getElementById('a-e');e.textContent=m;e.style.display='block'}
 function gBid(){return Math.random().toString(36).substring(2,12).toUpperCase()}
@@ -407,6 +439,9 @@ let us=JSON.parse(localStorage.getItem('us')||'{}')
 let u=us[currU]
 if(!u.bid){u.bid=gBid();localStorage.setItem('us',JSON.stringify(us))}
 document.getElementById('bid-v').textContent=u.bid
+document.getElementById('bid-v').style.webkitTextSecurity='disc'
+document.getElementById('b-eye-o').style.display='block'
+document.getElementById('b-eye-c').style.display='none'
 document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on'))
 document.getElementById(`t-${u.t||'dark'}`).classList.add('on')
 const p=document.getElementById('set-p')
