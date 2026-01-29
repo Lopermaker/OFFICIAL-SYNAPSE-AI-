@@ -182,7 +182,14 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
 .txt b{color:var(--t-c);font-weight:600}
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#565869;border-radius:4px}::-webkit-scrollbar-thumb:hover{background:#acacbe}
 .brand,.item,.btn,.tool,#send,.sw-c,.t-btn,.add-p,.mdl-btn,.auth-t,.lo,#u-n{user-select:none}
-</style>
+ .set-sb{width:200px;background:var(--s-bg);border-right:1px solid var(--b-c);display:flex;flex-direction:column;padding:10px;gap:5px}
+ .set-tab{padding:10px;border-radius:6px;cursor:pointer;color:var(--t-s);display:flex;align-items:center;gap:10px;font-size:14px;transition:background 0.2s,color 0.2s}
+ .set-tab:hover{background:var(--h-bg);color:var(--t-c)}
+ .set-tab.active{background:var(--m-bg);color:var(--t-c);font-weight:600}
+ .set-cnt{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;background:var(--bg)}
+ .tab-content{display:none;flex-direction:column;gap:15px}
+ .tab-content.active{display:flex}
+ </style>
 <script>document.addEventListener('DOMContentLoaded',()=>{
 const s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#10a37f" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 9V5"/><path d="M12 19v-4"/><path d="M19 12h-4"/><path d="M9 12H5"/><path d="M17.5 7.5L15 10"/><path d="M6.5 16.5L9 14"/><path d="M17.5 16.5L15 14"/><path d="M6.5 7.5L9 10"/></svg>`
 document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+btoa(s)
@@ -259,100 +266,46 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 <input type="file" id="fi" accept="image/*" style="display:none" multiple onchange="hFile(this)">
 </div></div></div>
 <div id="mdl"><div class="mdl-c"><div class="mdl-t" id="mdl-h"></div><div id="mdl-t"></div><input id="mdl-i"><div class="mdl-b"><button class="mdl-btn mdl-cn" onclick="clsM()">Cancel</button><button class="mdl-btn mdl-ok" id="mdl-a">OK</button></div></div></div>
-<div id="set" onclick="if(event.target===this)togSet()"><div class="mdl-c" style="max-width:500px">
-<div class="mdl-t">Settings</div>
-<div class="set-o" id="set-own" style="display:none">
-    <label>Owner Settings</label>
-    <div class="sw-c" onclick="togInf()">
-    <div style="font-size:14px">Infinite Image Capacity</div>
-    <div class="sw" id="sw-inf"></div>
+<div id="set" onclick="if(event.target===this)togSet()">
+<div class="mdl-c" style="max-width:800px;display:flex;padding:0;overflow:hidden;height:600px">
+    <div class="set-sb">
+        <div class="set-tab active" onclick="swTab('gen')" id="tab-gen"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> General</div>
+        <div class="set-tab" onclick="swTab('feat')" id="tab-feat"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Features</div>
+        <div class="set-tab" onclick="swTab('pers')" id="tab-pers"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Personalization</div>
+        <div class="set-tab" onclick="swTab('data')" id="tab-data"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Data</div>
+        <div class="set-tab" onclick="swTab('own')" id="tab-own" style="display:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg> Owner</div>
     </div>
-    <div class="sw-c" onclick="togInst()">
-    <div style="font-size:14px">Instant AI Response</div>
-    <div class="sw" id="sw-inst"></div>
-    </div>
-    </div>
-    <div class="set-o">
-    <label>Features</label>
-<div class="sw-c" onclick="togCod()">
-<div style="font-size:14px">Coding Indicator (Brain)</div>
-<div class="sw" id="sw-cod"></div>
-</div>
-<div class="sw-c" onclick="togQI()">
-<div style="font-size:14px">Quiz Indicator (Cap)</div>
-<div class="sw" id="sw-q-ind"></div>
-</div>
-</div>
-<div class="set-o">
-<label>Sound</label>
-<div class="sw-c" onclick="togSn()">
-<div style="font-size:14px">Completion Sound</div>
-<div class="sw" id="sw-sn"></div>
-</div>
-<div style="display:flex;gap:10px">
-<div style="flex:1;position:relative">
-<button class="mdl-btn mdl-cn" onclick="document.getElementById('sn-f').click()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-Change Sound
-</button>
-<div id="sn-x" onclick="remSn()" style="position:absolute;top:-8px;right:-8px;background:#ff4b4b;color:#fff;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:2px solid var(--s-bg);z-index:5">×</div>
-</div>
-<button class="mdl-btn mdl-ok" onclick="playSn()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
-Preview
-</button>
-</div>
-<input type="file" id="sn-f" accept="audio/*" style="display:none" onchange="updSn(this)">
-</div>
-<div class="set-o">
-<label>Account</label>
-<div class="tk-c">
-<div class="tk-h"><span>Available Usage</span><span id="tk-v">...</span></div>
-<div class="tk-b"><div class="tk-f" id="tk-f"></div></div>
-<div style="text-align:right;font-size:11px;margin-top:4px;color:var(--t-s)"><span id="tk-p">0</span>% left</div>
-</div>
-</div>
-<div class="set-o">
-<label>Personalization</label>
+    <div class="set-cnt">
+        <div class="mdl-t" style="margin-bottom:20px;border-bottom:1px solid var(--b-c);padding-bottom:15px">Settings</div>
+        
+        <div id="c-gen" class="tab-content active">
+             <div class="set-o"><label>Theme</label><div class="set-t"><div class="t-btn" id="t-dark" onclick="updT('dark')">Dark</div><div class="t-btn" id="t-light" onclick="updT('light')">Light</div><div class="t-btn" id="t-ocean" onclick="updT('ocean')">Ocean</div></div></div>
+             <div class="set-o"><label>Sound</label><div class="sw-c" onclick="togSn()"><div style="font-size:14px">Completion Sound</div><div class="sw" id="sw-sn"></div></div><div style="display:flex;gap:10px"><div style="flex:1;position:relative"><button class="mdl-btn mdl-cn" onclick="document.getElementById('sn-f').click()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg> Change Sound</button><div id="sn-x" onclick="remSn()" style="position:absolute;top:-8px;right:-8px;background:#ff4b4b;color:#fff;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:2px solid var(--s-bg);z-index:5">×</div></div><button class="mdl-btn mdl-ok" onclick="playSn()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg> Preview</button></div><input type="file" id="sn-f" accept="audio/*" style="display:none" onchange="updSn(this)"></div>
+             <div class="set-o"><label>Profile Picture</label><div class="pfp-c"><div id="set-p" class="pfp-i"></div><div style="position:relative"><button class="mdl-btn mdl-cn" onclick="document.getElementById('pfp-f').click()">Change</button><div id="pfp-x" onclick="remPfp()" style="position:absolute;top:-8px;right:-8px;background:#ff4b4b;color:#fff;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:2px solid var(--s-bg);z-index:5">×</div></div><input type="file" id="pfp-f" accept="image/*" style="display:none" onchange="updP(this)"></div></div>
+             <div class="set-o"><label>Account Usage</label><div class="tk-c"><div class="tk-h"><span>Available Usage</span><span id="tk-v">...</span></div><div class="tk-b"><div class="tk-f" id="tk-f"></div></div><div style="text-align:right;font-size:11px;margin-top:4px;color:var(--t-s)"><span id="tk-p">0</span>% left</div></div></div>
+        </div>
 
-<div class="set-p">
-<label>SYSTEM <span id="imp-s-btn" style="color:var(--a-c);cursor:pointer;font-size:11px;margin-left:10px" onclick="impS()">IMPROVE</span></label>
-<textarea id="set-sys" placeholder="Define the model's behavior or role..." oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';updPS()"></textarea>
-</div>
-<div id="pairs-l"></div>
-<div class="add-p" onclick="addP()">+ Add message pair</div>
-</div>
-<div class="set-o">
-<label>Theme</label>
-<div class="set-t">
-<div class="t-btn" id="t-dark" onclick="updT('dark')">Dark</div>
-<div class="t-btn" id="t-light" onclick="updT('light')">Light</div>
-<div class="t-btn" id="t-ocean" onclick="updT('ocean')">Ocean</div>
-</div>
-</div>
-<div class="set-o">
-<label>Profile Picture</label>
-<div class="pfp-c">
-<div id="set-p" class="pfp-i"></div>
-<div style="position:relative">
-<button class="mdl-btn mdl-cn" onclick="document.getElementById('pfp-f').click()">Change</button>
-<div id="pfp-x" onclick="remPfp()" style="position:absolute;top:-8px;right:-8px;background:#ff4b4b;color:#fff;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:2px solid var(--s-bg);z-index:5">×</div>
-</div>
-<input type="file" id="pfp-f" accept="image/*" style="display:none" onchange="updP(this)">
+        <div id="c-feat" class="tab-content">
+             <div class="set-o"><label>Features</label><div class="sw-c" onclick="togCod()"><div style="font-size:14px">Coding Indicator (Brain)</div><div class="sw" id="sw-cod"></div></div><div class="sw-c" onclick="togQI()"><div style="font-size:14px">Quiz Indicator (Cap)</div><div class="sw" id="sw-q-ind"></div></div></div>
+        </div>
+
+        <div id="c-pers" class="tab-content">
+             <div class="set-o"><label>System Instructions</label><div class="set-p"><label>SYSTEM <span id="imp-s-btn" style="color:var(--a-c);cursor:pointer;font-size:11px;margin-left:10px" onclick="impS()">IMPROVE</span></label><textarea id="set-sys" placeholder="Define the model's behavior or role..." oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';updPS()"></textarea></div></div>
+             <div class="set-o"><label>Message Pairs</label><div id="pairs-l"></div><div class="add-p" onclick="addP()">+ Add message pair</div></div>
+        </div>
+
+        <div id="c-data" class="tab-content">
+             <div class="set-o"><label>Data Management</label><div style="display:flex;gap:10px;margin-bottom:10px"><button class="mdl-btn mdl-cn" onclick="expD()" style="flex:1">Export Account</button><button class="mdl-btn mdl-cn" onclick="impD()" style="flex:1">Import Account</button></div><div class="sw-c" style="border-color:#ff4b4b;justify-content:center;background:rgba(255,75,75,0.15)" onclick="resetAll()"><div style="font-size:13px;color:#d93025;font-weight:700">FACTORY RESET (DELETE ALL CHATS)</div></div></div>
+        </div>
+
+        <div id="c-own" class="tab-content">
+             <div class="set-o"><label>Owner Controls</label><div class="sw-c" onclick="togInf()"><div style="font-size:14px">Infinite Image Capacity</div><div class="sw" id="sw-inf"></div></div><div class="sw-c" onclick="togInst()"><div style="font-size:14px">Instant AI Response</div><div class="sw" id="sw-inst"></div></div></div>
+        </div>
+
+        <div class="mdl-b" style="margin-top:auto;padding-top:20px;border-top:1px solid var(--b-c)"><button class="mdl-btn mdl-ok" onclick="togSet()">Close</button></div>
+    </div>
 </div>
 </div>
-<div class="set-o">
-<label>Data</label>
-<div style="display:flex;gap:10px;margin-bottom:10px">
-<button class="mdl-btn mdl-cn" onclick="expD()" style="flex:1">Export Account</button>
-<button class="mdl-btn mdl-cn" onclick="impD()" style="flex:1">Import Account</button>
-</div>
-<div class="sw-c" style="border-color:#ff4b4b;justify-content:center;background:rgba(255,75,75,0.15)" onclick="resetAll()">
-<div style="font-size:13px;color:#d93025;font-weight:700">FACTORY RESET (DELETE ALL CHATS)</div>
-</div>
-</div>
-<div class="mdl-b"><button class="mdl-btn mdl-ok" onclick="togSet()">Close</button></div>
-</div></div>
 <script>
 const mc=document.getElementById('msgs'),pi=document.getElementById('p'),sb=document.getElementById('send'),nb=document.getElementById('new'),ht=document.getElementById('hist'),tb=document.getElementById('tmp')
 let ak='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',sid=null,ss=[],ac=null,ty=null,gen=false,imgs=[],sMode=false,currM=null,currU=null,isL=true,tmpMode=false,tmpMsgs=[],ttT
@@ -413,10 +366,17 @@ showM('Logout Failed', null, ()=>{}, false, 'Username incorrect. Logout cancelle
 }
 }, true, `Please type your username "${currU}" to confirm logout.`)
 }
+function swTab(t){
+document.querySelectorAll('.set-tab').forEach(e=>e.classList.remove('active'))
+document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'))
+document.getElementById(`tab-${t}`).classList.add('active')
+document.getElementById(`c-${t}`).classList.add('active')
+}
 function togSet(){
 const m=document.getElementById('set')
 m.style.display=m.style.display==='flex'?'none':'flex'
 if(m.style.display==='flex'){
+swTab('gen')
 const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
 document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on'))
 document.getElementById(`t-${u.t||'dark'}`).classList.add('on')
@@ -425,7 +385,7 @@ p.innerHTML=u.pfp?`<img src="${u.pfp}" style="width:100%;height:100%;object-fit:
 document.getElementById('sw-cod').className=`sw ${u.ce!==false?'on':''}`
 document.getElementById('sw-q-ind').className=`sw ${u.qi!==false?'on':''}`
 document.getElementById('sw-sn').className=`sw ${u.sn!==false?'on':''}`
-document.getElementById('set-own').style.display=currU==='Xiaon32'?'block':'none'
+document.getElementById('tab-own').style.display=currU==='Xiaon32'?'flex':'none'
 document.getElementById('sw-inf').className=`sw ${u.inf?'on':''}`
 document.getElementById('sw-inst').className=`sw ${u.inst?'on':''}`
 document.getElementById('sn-x').style.display=u.aud?'flex':'none'
