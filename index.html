@@ -359,7 +359,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 <script>
 const mc=document.getElementById('msgs'),pi=document.getElementById('p'),sb=document.getElementById('send'),nb=document.getElementById('new'),ht=document.getElementById('hist'),tb=document.getElementById('tmp'),acl=document.getElementById('ac-l')
-let ak='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',sid=null,ss=[],ac=null,ty=null,gen=false,imgs=[],smode=false,curm=null,curu=null,isl=true,isb=false,tmpmode=false,tmpmsgs=[],ttt,aci=-1,aco=[],curscr=null,curfld=null,drg=null
+let ak='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',sid=null,ss=[],ac=null,ty=null,gen=false,imgs=[],smode=false,curm=null,curu=null,isl=true,isb=false,tpmode=false,tpmsgs=[],ttt,aci=-1,aco=[],curscr=null,curfld=null,drg=null
 document.addEventListener('mouseover',e=>{
 const el=e.target.closest('[data-tip]')
 if(el){clearTimeout(ttt);ttt=setTimeout(()=>{const tt=document.getElementById('tt');tt.textContent=el.getAttribute('data-tip');tt.style.display='block';tt.style.left=e.clientX+'px';tt.style.top=e.clientY+'px'},100)}
@@ -402,6 +402,7 @@ function addscr(fid=null){
   },'')
 }
 function moveexp(id,tid,fid){
+  if(id===tid)return
   const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
   let item,p
   if(fid){p=u.exp.find(x=>x.id===fid);item=p.c.find(x=>x.id===id);p.c=p.c.filter(x=>x.id!==id)}
@@ -501,39 +502,39 @@ function selAc(i){
 const o=aco[i],v=pi.value,p=pi.selectionStart,t=v.substring(0,p).replace(/#(\w*)$/,'#'+o.n),f=v.substring(p)
 pi.value=t+f;pi.focus();  pi.setSelectionRange(t.length,t.length);acl.style.display='none'
 }
-function togA(){
-isL=!isL;isB=false
-document.getElementById('a-h').textContent=isL?'Login':'Sign Up'
-document.getElementById('a-b').textContent=isL?'Login':'Sign Up'
-document.getElementById('a-t').innerHTML=isL?"Don't have an account? <span>Sign up</span>":"Already have an account? <span>Login</span>"
+function toga(){
+isl=!isl;isb=false
+document.getElementById('a-h').textContent=isl?'Login':'Sign Up'
+document.getElementById('a-b').textContent=isl?'Login':'Sign Up'
+document.getElementById('a-t').innerHTML=isl?"Don't have an account? <span>Sign up</span>":"Already have an account? <span>Login</span>"
 document.querySelector('.auth-p').style.display='block'
 document.getElementById('u-eye').style.display='none'
 const u=document.getElementById('a-u')
-u.style.webkitTextSecurity='none';u.placeholder=isL?'Username':'Create Username'
-document.getElementById('a-b-l').style.display=isL?'block':'none'
+u.style.webkitTextSecurity='none';u.placeholder=isl?'Username':'Create Username'
+document.getElementById('a-b-l').style.display=isl?'block':'none'
 document.getElementById('a-e').style.display='none'
 }
-function togB(){
-isB=!isB;isL=true
-document.getElementById('a-h').textContent=isB?'Backup Login':'Login'
-document.getElementById('a-b').textContent=isB?'Verify Code':'Login'
-document.querySelector('.auth-p').style.display=isB?'none':'block'
-document.getElementById('u-eye').style.display=isB?'flex':'none'
+function togb(){
+isb=!isb;isl=true
+document.getElementById('a-h').textContent=isb?'Backup Login':'Login'
+document.getElementById('a-b').textContent=isb?'Verify Code':'Login'
+document.querySelector('.auth-p').style.display=isb?'none':'block'
+document.getElementById('u-eye').style.display=isb?'flex':'none'
 const u=document.getElementById('a-u')
-u.style.webkitTextSecurity=isB?'disc':'none'
-u.placeholder=isB?'Enter 10-character Backup Code':'Username'
+u.style.webkitTextSecurity=isb?'disc':'none'
+u.placeholder=isb?'Enter 10-character Backup Code':'Username'
 u.value=''
 document.getElementById('u-eye-o').style.display='block'
 document.getElementById('u-eye-c').style.display='none'
-document.getElementById('a-t').style.display=isB?'none':'block'
-document.getElementById('a-b-l').innerHTML=isB?'Back to <span>Password Login</span>':'Lost your password? Use your <span>Backup Code</span>'
+document.getElementById('a-t').style.display=isb?'none':'block'
+document.getElementById('a-b-l').innerHTML=isb?'Back to <span>Password Login</span>':'Lost your password? Use your <span>Backup Code</span>'
 document.getElementById('a-e').style.display='none'
 }
-function togP(i='a-p',o='eye-o',c='eye-c'){
+function togp(i='a-p',o='eye-o',c='eye-c'){
 const p=document.getElementById(i),so=document.getElementById(o),hc=document.getElementById(c)
-if(p.type==='password'||p.type==='text'&&p.id==='a-u'&&isB){
-const isH=p.type==='password'||(p.id==='a-u'&&p.style.webkitTextSecurity==='disc')
-if(isH){
+if(p.type==='password'||p.type==='text'&&p.id==='a-u'&&isb){
+const ish=p.type==='password'||(p.id==='a-u'&&p.style.webkitTextSecurity==='disc')
+if(ish){
 if(p.id==='a-u'){p.style.webkitTextSecurity='none'}else{p.type='text'}
 so.style.display='none';hc.style.display='block'
 }else{
@@ -776,12 +777,13 @@ function togNav(){
 const s=document.getElementById('s'),o=document.querySelector('.ovl'),b=document.querySelector('.menu-btn')
 s.classList.toggle('open');o.classList.toggle('show');b.classList.toggle('hide',s.classList.contains('open'))
 }
-function togS(){sMode=!sMode;document.getElementById('t-s').classList.toggle('on',sMode)}
-function togMD(){const d=document.getElementById('m-drop');d.style.display=d.style.display==='flex'?'none':'flex'}
-function setM(m){
-currM=m;document.getElementById('m-drop').style.display='none'
+function togs(){smode=!smode;document.getElementById('t-s').classList.toggle('on',smode)}
+function togmd(){const d=document.getElementById('m-drop');d.style.display=d.style.display==='flex'?'none':'flex'}
+function setm(m){
+curm=m;document.getElementById('m-drop').style.display='none'
 document.getElementById('m-think').classList.toggle('on',m==='think')
 document.getElementById('m-study').classList.toggle('on',m==='study')
+}
 document.getElementById('m-act').textContent=m?(m==='think'?'(Think)':'(Study)'):''
 }
 function hFile(e){
