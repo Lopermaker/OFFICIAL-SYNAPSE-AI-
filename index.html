@@ -205,7 +205,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 <div class="auth-c">
 <h2 id="a-h">Login</h2>
 <div id="a-e" class="auth-e"></div>
-<input type="text" id="a-u" placeholder="Username" maxlength="10">
+<input type="text" id="a-u" placeholder="Username or Backup Code">
 <div class="auth-p">
 <input type="password" id="a-p" placeholder="Password">
 <div class="eye" onclick="togP()">
@@ -215,7 +215,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 <button class="auth-btn" id="a-b" onclick="auth()">Login</button>
 <div class="auth-t" id="a-t" onclick="togA()">Don't have an account? <span>Sign up</span></div>
-<div style="margin-top:15px;font-size:12px;color:var(--t-s);cursor:pointer" onclick="impD()">Already have a code? <span style="color:var(--a-c)">Import Account</span></div>
+<div style="margin-top:15px;font-size:12px;color:var(--t-s)">Lost your password? Use your <span style="color:var(--a-c)">Backup Code</span> to login.</div>
 </div>
 </div>
 <div id="s">
@@ -300,8 +300,8 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
         </div>
 
         <div id="c-data" class="tab-content">
-             <div class="set-o"><label>Data Management</label><div style="display:flex;gap:10px;margin-bottom:10px"><button class="mdl-btn mdl-cn" onclick="expD()" style="flex:1">Backup Account</button><button class="mdl-btn mdl-cn" onclick="impD()" style="flex:1">Restore Backup</button></div><div class="sw-c" style="border-color:#ff4b4b;justify-content:center;background:rgba(255,75,75,0.15)" onclick="resetAll()"><div style="font-size:13px;color:#d93025;font-weight:700">FACTORY RESET (DELETE ALL CHATS)</div></div></div>
-        </div>
+              <div class="set-o"><label>Backup Code</label><div style="display:flex;gap:10px;margin-bottom:10px;background:var(--m-bg);padding:10px;border-radius:5px;border:1px solid var(--b-c);align-items:center;justify-content:space-between"><span id="bid-v" style="font-family:monospace;font-weight:700;letter-spacing:1px;color:var(--a-c)"></span><button class="mdl-btn mdl-cn" onclick="cpyB()" style="padding:5px 10px;font-size:12px">Copy</button></div><p style="font-size:11px;color:var(--t-s);margin-bottom:15px">Use this 10-character code to log back into your account from the login screen.</p><div class="sw-c" style="border-color:#ff4b4b;justify-content:center;background:rgba(255,75,75,0.15)" onclick="resetAll()"><div style="font-size:13px;color:#d93025;font-weight:700">FACTORY RESET (DELETE ALL CHATS)</div></div></div>
+          </div>
 
         <div id="c-own" class="tab-content">
              <div class="set-o"><label>Owner Controls</label><div class="sw-c" onclick="togInf()"><div style="font-size:14px">Infinite Image Capacity</div><div class="sw" id="sw-inf"></div></div><div class="sw-c" onclick="togInst()"><div style="font-size:14px">Instant AI Response</div><div class="sw" id="sw-inst"></div></div></div>
@@ -336,17 +336,22 @@ if(pass.type==='password'){  pass.type='text';show.style.display='none';hide.sty
 else{  pass.type='password';show.style.display='block';hide.style.display='none'}
 }
 function aErr(m){const e=document.getElementById('a-e');e.textContent=m;e.style.display='block'}
+function gBid(){return Math.random().toString(36).substring(2,12).toUpperCase()}
 function auth(){
 const u=document.getElementById('a-u').value.trim(),p=document.getElementById('a-p').value.trim()
 document.getElementById('a-e').style.display='none'
-if(!u||!p)return aErr('Please fill in all fields')
-if(u.length>10)return aErr('Username must be 10 characters or less')
+if(!u)return aErr('Please enter a username or backup code')
 let us=JSON.parse(localStorage.getItem('us')||'{}')
 if(isL){
+if(!p){
+const k=Object.keys(us).find(x=>us[x].bid===u.toUpperCase())
+if(k)return login(k)
+}
 if(us[u]&&us[u].p===p){login(u)}else aErr('Invalid username or password')
 }else{
+if(!p)return aErr('Please enter a password')
 if(us[u])return aErr('Username already exists')
-us[u]={p,ss:[]};localStorage.setItem('us',JSON.stringify(us));login(u)
+us[u]={p,ss:[],bid:gBid()};localStorage.setItem('us',JSON.stringify(us));login(u)
 }
 }
 function login(u){
@@ -383,7 +388,10 @@ const m=document.getElementById('set')
 m.style.display=m.style.display==='flex'?'none':'flex'
 if(m.style.display==='flex'){
 swTab('gen')
-const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+let us=JSON.parse(localStorage.getItem('us')||'{}')
+let u=us[currU]
+if(!u.bid){u.bid=gBid();localStorage.setItem('us',JSON.stringify(us))}
+document.getElementById('bid-v').textContent=u.bid
 document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on'))
 document.getElementById(`t-${u.t||'dark'}`).classList.add('on')
 const p=document.getElementById('set-p')
@@ -517,27 +525,12 @@ showM('Factory Reset',null,()=>{
 ss=[];sid=null;createS();togSet()
 },true,'Are you sure you want to delete ALL chat sessions? This cannot be undone.')
 }
-function expD(){
-const d=localStorage.getItem('us')
-if(!d)return showM('Error',null,()=>{},false,'No account data found.')
-const b=new Blob([d],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a')
-a.href=u;a.download=`synapse_backup_${new Date().toISOString().slice(0,10)}.json`
-a.click();URL.revokeObjectURL(u)
-}
-function impD(){
-const f=document.createElement('input');f.type='file';f.accept='.json'
-f.onchange=e=>{
-const fi=e.target.files[0];if(!fi)return
-const r=new FileReader();r.onload=ev=>{
-try{
-const d=ev.target.result;JSON.parse(d)
-showM('Restore Account',null,()=>{
-localStorage.setItem('us',d);location.reload()
-},true,'Warning: This will OVERWRITE your current account data! Are you sure?')
-}catch(err){alert('Invalid backup file!')}
-};r.readAsText(fi)
-}
-f.click()
+function cpyB(){
+const t=document.getElementById('bid-v').textContent
+navigator.clipboard.writeText(t).then(()=>{
+const b=event.target;const old=b.textContent
+b.textContent='Copied!';setTimeout(()=>b.textContent=old,2000)
+})
 }
 function updT(t){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
