@@ -36,6 +36,7 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
 .ed-f{padding:10px 20px;border-top:1px solid var(--b-c);display:flex;justify-content:flex-end;gap:10px}
 .item{padding:10px;margin-bottom:5px;border-radius:5px;cursor:pointer;font-size:14px;color:var(--t-c);display:flex;align-items:center;gap:10px;position:relative}
 .item:hover,.item.active{background-color:var(--h-bg)}
+.item.drg-ov{background:rgba(84,54,218,0.2);border:1px dashed #5436da}
 .dots{opacity:0;transition:opacity 0.2s;padding:2px;border-radius:4px;flex-shrink:0}
 .item:hover .dots{opacity:1}
 .dots:hover{background:#40414f}
@@ -285,7 +286,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 <textarea id="p" placeholder="Send a message..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
 <div class="bar">
 <div class="tools">
-<div class="tool" onclick="showM('Image Upload Disabled',null,()=>{},false,'Images are currently disabled.')" data-tip="Upload images for analysis"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Image</div>
+<div class="tool" onclick="showc('Image Upload Disabled','Images are currently disabled.',()=>{})" data-tip="Upload images for analysis"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Image</div>
 <div class="tool" id="t-s" onclick="togS()" data-tip="Search the web for real-time info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search</div>
 <div class="tool" style="position:relative" data-tip="Choose a reasoning mode">
 <div onclick="togMD()" style="display:flex;align-items:center;gap:5px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Modes <span id="m-act" style="color:var(--a-c);font-size:10px;font-weight:700"></span></div>
@@ -358,101 +359,139 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 <script>
 const mc=document.getElementById('msgs'),pi=document.getElementById('p'),sb=document.getElementById('send'),nb=document.getElementById('new'),ht=document.getElementById('hist'),tb=document.getElementById('tmp'),acl=document.getElementById('ac-l')
-let ak='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',sid=null,ss=[],ac=null,ty=null,gen=false,imgs=[],sMode=false,currM=null,currU=null,isL=true,isB=false,tmpMode=false,tmpMsgs=[],ttT,aci=-1,aco=[],curscr=null,curfld=null
+let ak='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',sid=null,ss=[],ac=null,ty=null,gen=false,imgs=[],smode=false,curm=null,curu=null,isl=true,isb=false,tmpmode=false,tmpmsgs=[],ttt,aci=-1,aco=[],curscr=null,curfld=null,drg=null
 document.addEventListener('mouseover',e=>{
 const el=e.target.closest('[data-tip]')
-if(el){clearTimeout(ttT);ttT=setTimeout(()=>{const tt=document.getElementById('tt');tt.textContent=el.getAttribute('data-tip');tt.style.display='block';tt.style.left=e.clientX+'px';tt.style.top=e.clientY+'px'},100)}
+if(el){clearTimeout(ttt);ttt=setTimeout(()=>{const tt=document.getElementById('tt');tt.textContent=el.getAttribute('data-tip');tt.style.display='block';tt.style.left=e.clientX+'px';tt.style.top=e.clientY+'px'},100)}
 })
 document.addEventListener('mousemove',e=>{const tt=document.getElementById('tt');if(tt.style.display==='block'){tt.style.left=e.clientX+'px';tt.style.top=e.clientY+'px'}})
 document.addEventListener('mouseout',e=>{
 const el=e.target.closest('[data-tip]')
-if(el&&(!e.relatedTarget||!el.contains(e.relatedTarget))){clearTimeout(ttT);document.getElementById('tt').style.display='none'}
+if(el&&(!e.relatedTarget||!el.contains(e.relatedTarget))){clearTimeout(ttt);document.getElementById('tt').style.display='none'}
 })
-document.addEventListener('mousedown',()=>{clearTimeout(ttT);document.getElementById('tt').style.display='none'})
-function togExp(){
+document.addEventListener('mousedown',()=>{clearTimeout(ttt);document.getElementById('tt').style.display='none';document.querySelectorAll('.menu').forEach(m=>m.style.display='none')})
+function showc(h,txt,cb,v=null){showm(h,v,cb,false,txt)}
+function togexp(){
 const exp=document.getElementById('exp')
-const expB=document.getElementById('exp-b')
+const expb=document.getElementById('exp-b')
 exp.style.display=exp.style.display==='flex'?'none':'flex'
-expB.classList.toggle('active')
+expb.classList.toggle('active')
 }
-function addFld(){
-  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
+function addfld(){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[curu];
   if(!u.exp)u.exp=[];
-  const name=prompt('Folder Name:');
-  if(!name)return;
-  u.exp.push({id:Date.now(),t:'fld',n:name,c:[]});
-  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}));
-  rendExp();
+  showc('New Folder','Enter folder name:',name=>{
+    if(!name)return;
+    u.exp.push({id:Date.now(),t:'fld',n:name,c:[]});
+    localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}));
+    rendexp();
+  },'')
 }
-function addScr(fid=null){
-  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
+function addscr(fid=null){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[curu];
   if(!u.exp)u.exp=[];
-  const name=prompt('Script Name:');
-  if(!name)return;
-  const s={id:Date.now(),t:'scr',n:name,v:''};
-  if(fid){
-    const f=u.exp.find(x=>x.id===fid);
-    if(f)f.c.push(s);
-  }else u.exp.push(s);
-  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}));
-  rendExp();
+  showc('New Script','Enter script name:',name=>{
+    if(!name)return;
+    const s={id:Date.now(),t:'scr',n:name,v:''};
+    if(fid){
+      const f=u.exp.find(x=>x.id===fid);
+      if(f)f.c.push(s);
+    }else u.exp.push(s);
+    localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}));
+    rendexp();
+  },'')
 }
-function rendExp(){
-const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+function moveexp(id,tid,fid){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
+  let item,p
+  if(fid){p=u.exp.find(x=>x.id===fid);item=p.c.find(x=>x.id===id);p.c=p.c.filter(x=>x.id!==id)}
+  else{item=u.exp.find(x=>x.id===id);u.exp=u.exp.filter(x=>x.id!==id)}
+  const t=u.exp.find(x=>x.id===tid)
+  if(t&&t.t==='fld')t.c.push(item)
+  else u.exp.push(item)
+  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}))
+  rendexp()
+}
+function renexp(id,fid=null){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
+  let item=fid?u.exp.find(x=>x.id===fid).c.find(x=>x.id===id):u.exp.find(x=>x.id===id)
+  showc('Rename Item',`Rename "${item.n}" to:`,nn=>{
+    if(!nn)return
+    item.n=nn
+    localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}))
+    rendexp()
+    if(curscr===id)edscr(id,fid)
+  },item.n)
+}
+function rendexp(){
+const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
 const l=document.getElementById('exp-l')
 l.innerHTML=''
 if(!u.exp)return
 u.exp.forEach(i=>{
 const d=document.createElement('div')
 d.className='item'
-d.style.padding='6px 10px'
-d.style.margin='0'
-d.style.borderRadius='4px'
-d.innerHTML=i.t==='fld'?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.n}</span> <div style="display:flex;gap:4px"><div class="dots" onclick="event.stopPropagation();addScr(${i.id})" data-tip="Add script"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div><div class="dots" onclick="event.stopPropagation();delExp(${i.id})" data-tip="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.n}</span> <div class="dots" onclick="event.stopPropagation();delExp(${i.id})" data-tip="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div>`
-if(i.t==='scr')d.onclick=()=>edScr(i.id)
+d.style.padding='6px 10px';d.style.margin='0';d.style.borderRadius='4px'
+d.draggable=true
+d.ondragstart=()=>{drg={id:i.id,fid:null}}
+d.ondragover=e=>{e.preventDefault();d.classList.add('drg-ov')}
+d.ondragleave=()=>d.classList.remove('drg-ov')
+d.ondrop=e=>{e.preventDefault();d.classList.remove('drg-ov');moveexp(drg.id,i.id,drg.fid)}
+d.innerHTML=i.t==='fld'?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.n}</span> <div style="display:flex;gap:4px"><div class="dots" onclick="event.stopPropagation();addscr(${i.id})" data-tip="Add script"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div><div class="dots" onclick="event.stopPropagation();const m=this.nextElementSibling;m.style.display=m.style.display==='block'?'none':'block'" data-tip="Options"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div><div class="menu"><div onclick="event.stopPropagation();renexp(${i.id})">Rename</div><div onclick="event.stopPropagation();delexp(${i.id})">Delete</div></div></div>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.n}</span> <div style="display:flex;gap:4px"><div class="dots" onclick="event.stopPropagation();const m=this.nextElementSibling;m.style.display=m.style.display==='block'?'none':'block'" data-tip="Options"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div><div class="menu"><div onclick="event.stopPropagation();renexp(${i.id})">Rename</div><div onclick="event.stopPropagation();delexp(${i.id})">Delete</div></div></div>`
+if(i.t==='scr')d.onclick=()=>edscr(i.id)
 l.appendChild(d)
 if(i.t==='fld'&&i.c){
 i.c.forEach(s=>{
 const sd=document.createElement('div')
 sd.className='item'
-sd.style.padding='6px 10px 6px 25px'
-sd.style.margin='0'
-sd.style.borderRadius='4px'
-sd.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.n}</span> <div class="dots" onclick="event.stopPropagation();delExp(${s.id},${i.id})" data-tip="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div>`
-sd.onclick=()=>edScr(s.id,i.id)
+sd.style.padding='6px 10px 6px 25px';sd.style.margin='0';sd.style.borderRadius='4px'
+sd.draggable=true
+sd.ondragstart=()=>{drg={id:s.id,fid:i.id}}
+sd.ondragover=e=>{e.preventDefault();sd.classList.add('drg-ov')}
+sd.ondragleave=()=>sd.classList.remove('drg-ov')
+sd.ondrop=e=>{e.preventDefault();sd.classList.remove('drg-ov');moveexp(drg.id,s.id,drg.fid)}
+sd.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.n}</span> <div style="display:flex;gap:4px"><div class="dots" onclick="event.stopPropagation();const m=this.nextElementSibling;m.style.display=m.style.display==='block'?'none':'block'" data-tip="Options"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div><div class="menu"><div onclick="event.stopPropagation();renexp(${s.id},${i.id})">Rename</div><div onclick="event.stopPropagation();delexp(${s.id},${i.id})">Delete</div></div></div>`
+sd.onclick=()=>edscr(s.id,i.id)
 l.appendChild(sd)
 })
 }
 })
 }
-function delExp(id,fid=null){
-if(!confirm('Delete this item?'))return
-const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+function delexp(id,fid=null){
+showc('Delete Item','Are you sure you want to delete this?',()=>{
+const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
 if(fid){
 const f=u.exp.find(x=>x.id===fid)
 if(f)f.c=f.c.filter(x=>x.id!==id)
 }else u.exp=u.exp.filter(x=>x.id!==id)
-localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}))
-rendExp()
-if(curscr===id)clEd()
+localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}))
+rendexp()
+if(curscr===id)cled()
+})
 }
-function edScr(sid,fid=null){
-const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+function edscr(sid,fid=null){
+const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
 let s,p=null
-curscr=sid;  curfld=fid
+curscr=sid;curfld=fid
 if(fid){p=u.exp.find(x=>x.id===fid);s=p.c.find(x=>x.id===sid)}
 else s=u.exp.find(x=>x.id===sid)
 const ed=document.getElementById('ed'),tv=document.getElementById('ed-v'),th=document.getElementById('ed-t'),sb=document.getElementById('ed-s')
-ed.style.display='flex';  setTimeout(()=>ed.style.width='50%',10)
+ed.style.display='flex';setTimeout(()=>ed.style.width='50%',10)
 tv.value=s.v
-th.innerHTML=`<span style="opacity:0.6">#</span> <span>${p?p.n+' <span style="opacity:0.4">></span> ':''}${s.n}</span>`
+th.innerHTML=`<span style="opacity:0.6">#</span> <span style="cursor:pointer" onclick="renexp(${sid},${fid})">${p?p.n+' <span style="opacity:0.4">></span> ':''}${s.n}</span>`
+const cp=document.createElement('div')
+cp.className='btn';cp.textContent='Copy';cp.onclick=()=>{navigator.clipboard.writeText(tv.value);cp.textContent='Copied!';setTimeout(()=>cp.textContent='Copy',2000)}
+const rn=document.createElement('div')
+rn.className='btn';rn.textContent='Rename';rn.onclick=()=>renexp(sid,fid)
+const f=ed.querySelector('.ed-f')
+f.innerHTML='';f.append(rn);f.append(cp);const cn=document.createElement('div');cn.className='btn';cn.textContent='Cancel';cn.onclick=cled;f.append(cn);f.append(sb)
 sb.onclick=()=>{
 s.v=tv.value
-localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}))
-clEd()
+localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}))
+cled()
 }
 }
-function clEd(){
+function cled(){
 const ed=document.getElementById('ed')
 ed.style.width='0';  setTimeout(()=>ed.style.display='none',300)
 curscr=null;curfld=null
@@ -519,38 +558,34 @@ if(!u)return aErr(isB?'Please enter your backup code':'Please enter a username')
 let us=JSON.parse(localStorage.getItem('us')||'{}')
 if(isB){
 const k=Object.keys(us).find(x=>us[x].bid===u.toUpperCase())
-if(k){rendExp();return login(k)}
+if(k){rendexp();return login(k)}
 return aErr('Invalid backup code')
 }
 if(isL){
-if(us[u]&&us[u].p===p){rendExp();login(u)}else aErr('Invalid username or password')
+if(us[u]&&us[u].p===p){rendexp();login(u)}else aErr('Invalid username or password')
 }else{
 if(!p)return aErr('Please enter a password')
 if(us[u])return aErr('Username already exists')
-us[u]={p,ss:[],bid:gBid()};localStorage.setItem('us',JSON.stringify(us));rendExp();login(u)
+us[u]={p,ss:[],bid:gBid()};localStorage.setItem('us',JSON.stringify(us));rendexp();login(u)
 }
 }
 function login(u){
-currU=u;localStorage.setItem('currU',u);document.getElementById('auth').style.display='none'
+curu=u;localStorage.setItem('currU',u);document.getElementById('auth').style.display='none'
 const un=document.getElementById('u-n')
 un.textContent=u
 if(u==='Xiaon32'){
 un.innerHTML+=`<span class="own-t"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z"/></svg>OWNER</span>`
 }
-const us=JSON.parse(localStorage.getItem('us')||'{}')[u]
-document.body.className=us.t==='dark'?'':(us.t||'')
+const uo=JSON.parse(localStorage.getItem('us')||'{}')[u]
+document.body.className=uo.t==='dark'?'':(uo.t||'')
 const p=document.getElementById('u-p')
-p.innerHTML=us.pfp?`<img src="${us.pfp}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:u[0]
+p.innerHTML=uo.pfp?`<img src="${uo.pfp}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:u[0]
 load();window.onbeforeunload=save
 }
 function logout(){
-showM('Confirm Logout', '', (u)=>{
-if(u===currU){
+showc('Confirm Logout',`Please type your username "${curu}" to confirm logout.`,()=>{
 localStorage.removeItem('currU');location.reload()
-}else{
-showM('Logout Failed', null, ()=>{}, false, 'Username incorrect. Logout cancelled.')
-}
-}, true, `Please type your username "${currU}" to confirm logout.`)
+})
 }
 function swTab(t){
 document.querySelectorAll('.set-tab').forEach(e=>e.classList.remove('active'))
@@ -565,7 +600,7 @@ m.style.display=m.style.display==='flex'?'none':'flex'
 if(m.style.display==='flex'){
 swTab('gen')
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-let u=us[currU]
+let u=us[curu]
 if(!u.bid){u.bid=gBid();localStorage.setItem('us',JSON.stringify(us))}
 document.getElementById('bid-v').textContent=u.bid
 document.getElementById('bid-v').style.webkitTextSecurity='disc'
@@ -574,11 +609,11 @@ document.getElementById('b-eye-c').style.display='none'
 document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on'))
 document.getElementById(`t-${u.t||'dark'}`).classList.add('on')
 const p=document.getElementById('set-p')
-p.innerHTML=u.pfp?`<img src="${u.pfp}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:currU[0]
+p.innerHTML=u.pfp?`<img src="${u.pfp}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:curu[0]
 document.getElementById('sw-cod').className=`sw ${u.ce!==false?'on':''}`
 document.getElementById('sw-q-ind').className=`sw ${u.qi!==false?'on':''}`
 document.getElementById('sw-sn').className=`sw ${u.sn!==false?'on':''}`
-document.getElementById('tab-own').style.display=currU==='Xiaon32'?'flex':'none'
+document.getElementById('tab-own').style.display=curu==='Xiaon32'?'flex':'none'
 document.getElementById('sw-inf').className=`sw ${u.inf?'on':''}`
 document.getElementById('sw-inst').className=`sw ${u.inst?'on':''}`
 document.getElementById('sn-x').style.display=u.aud?'flex':'none'
@@ -592,32 +627,32 @@ renP()
 }
 function togQI(){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].qi=us[currU].qi===false?true:false
+us[curu].qi=us[curu].qi===false?true:false
 localStorage.setItem('us',JSON.stringify(us))
-document.getElementById('sw-q-ind').className=`sw ${us[currU].qi!==false?'on':''}`
+document.getElementById('sw-q-ind').className=`sw ${us[curu].qi!==false?'on':''}`
 }
 function togSn(){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].sn=us[currU].sn===false?true:false
+us[curu].sn=us[curu].sn===false?true:false
 localStorage.setItem('us',JSON.stringify(us))
-document.getElementById('sw-sn').className=`sw ${us[currU].sn!==false?'on':''}`
+document.getElementById('sw-sn').className=`sw ${us[curu].sn!==false?'on':''}`
 }
 function togInf(){
-if(currU!=='Xiaon32')return
+if(curu!=='Xiaon32')return
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].inf=!us[currU].inf
+us[curu].inf=!us[curu].inf
 localStorage.setItem('us',JSON.stringify(us))
-document.getElementById('sw-inf').className=`sw ${us[currU].inf?'on':''}`
+document.getElementById('sw-inf').className=`sw ${us[curu].inf?'on':''}`
 }
 function togInst(){
-if(currU!=='Xiaon32')return
+if(curu!=='Xiaon32')return
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].inst=!us[currU].inst
+us[curu].inst=!us[curu].inst
 localStorage.setItem('us',JSON.stringify(us))
-document.getElementById('sw-inst').className=`sw ${us[currU].inst?'on':''}`
+document.getElementById('sw-inst').className=`sw ${us[curu].inst?'on':''}`
 }
 function playSn(){
-const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
 const s=u.aud||'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
 const a=new Audio(s)
 a.play().then(()=>{
@@ -626,17 +661,17 @@ setTimeout(()=>a.pause(),5000)
 }
 function updSn(e){
 const f=e.files[0];if(!f)return
-if(f.size>500000)return showM('File Too Large',null,()=>{},false,'Please choose a sound file under 500KB.')
+if(f.size>500000)return showc('File Too Large','Please choose a sound file under 500KB.',()=>{})
 const r=new FileReader();r.onload=ev=>{
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].aud=ev.target.result;localStorage.setItem('us',JSON.stringify(us))
+us[curu].aud=ev.target.result;localStorage.setItem('us',JSON.stringify(us))
 document.getElementById('sn-x').style.display='flex'
 playSn()
 };r.readAsDataURL(f)
 }
 function remSn(){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-delete us[currU].aud
+delete us[curu].aud
 localStorage.setItem('us',JSON.stringify(us))
 document.getElementById('sn-x').style.display='none'
 }
@@ -648,12 +683,12 @@ el.textContent='Unlimited (Free)';f.style.width='100%';p.textContent='100'
 
 function togCod(){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].ce=us[currU].ce===false?true:false
+us[curu].ce=us[curu].ce===false?true:false
 localStorage.setItem('us',JSON.stringify(us))
-document.getElementById('sw-cod').className=`sw ${us[currU].ce!==false?'on':''}`
+document.getElementById('sw-cod').className=`sw ${us[curu].ce!==false?'on':''}`
 }
 function renP(){
-const u=JSON.parse(localStorage.getItem('us')||'{}')[currU],l=document.getElementById('pairs-l')
+const u=JSON.parse(localStorage.getItem('us')||'{}')[curu],l=document.getElementById('pairs-l')
 l.innerHTML=''
 ;(u.ps||[]).forEach((p,i)=>{
 l.innerHTML+=`<div class="pair">
@@ -667,21 +702,21 @@ l.querySelectorAll('textarea').forEach(t=>{t.style.height='auto';t.style.height=
 }
 function addP(){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-if(!us[currU].ps)us[currU].ps=[]
-us[currU].ps.push({u:'',a:''})
+if(!us[curu].ps)us[curu].ps=[]
+us[curu].ps.push({u:'',a:''})
 localStorage.setItem('us',JSON.stringify(us))
 renP()
 }
 function remP(i){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].ps.splice(i,1)
+us[curu].ps.splice(i,1)
 localStorage.setItem('us',JSON.stringify(us))
 renP()
 }
 function updPS(i,f,v){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-if(i===undefined)us[currU].sp=document.getElementById('set-sys').value
-else us[currU].ps[i][f]=v
+if(i===undefined)us[curu].sp=document.getElementById('set-sys').value
+else us[curu].ps[i][f]=v
 localStorage.setItem('us',JSON.stringify(us))
 }
 async function impS(){
@@ -696,13 +731,13 @@ const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'P
 if(r.ok){const j=await r.json();if(j.choices&&j.choices[0]){t.value=j.choices[0].message.content;t.style.height='auto';t.style.height=t.scrollHeight+'px';updPS();success=true;break}}
 }catch(e){console.log(e)}
 }
-if(!success)showM('Error',null,()=>{},false,'Failed to improve prompt. Please try again or check your connection.')
+if(!success)showc('Error','Failed to improve prompt. Please try again or check your connection.',()=>{})
 b.textContent=old
 }
 function resetAll(){
-showM('Factory Reset',null,()=>{
+showc('Factory Reset','Are you sure you want to delete ALL chat sessions? This cannot be undone.',()=>{
 ss=[];sid=null;createS();togSet()
-},true,'Are you sure you want to delete ALL chat sessions? This cannot be undone.')
+})
 }
 function cpyB(){
 const t=document.getElementById('bid-v').textContent
@@ -713,7 +748,7 @@ b.textContent='Copied!';setTimeout(()=>b.textContent=old,2000)
 }
 function updT(t){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].t=t;localStorage.setItem('us',JSON.stringify(us))
+us[curu].t=t;localStorage.setItem('us',JSON.stringify(us))
 document.body.className=t==='dark'?'':t
 document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on'))
 document.getElementById(`t-${t}`).classList.add('on')
@@ -722,7 +757,7 @@ function updP(e){
 const f=e.files[0];if(!f)return
 const r=new FileReader();r.onload=ev=>{
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].pfp=ev.target.result;localStorage.setItem('us',JSON.stringify(us))
+us[curu].pfp=ev.target.result;localStorage.setItem('us',JSON.stringify(us))
 const p=document.getElementById('set-p'),up=document.getElementById('u-p')
 p.innerHTML=up.innerHTML=`<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:contain;background:#fff">`
 document.getElementById('pfp-x').style.display='flex'
@@ -731,9 +766,9 @@ render();switchS(sid)
 }
 function remPfp(){
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-delete us[currU].pfp;localStorage.setItem('us',JSON.stringify(us))
+delete us[curu].pfp;localStorage.setItem('us',JSON.stringify(us))
 const p=document.getElementById('set-p'),up=document.getElementById('u-p')
-p.innerHTML=up.innerHTML=currU[0]
+p.innerHTML=up.innerHTML=curu[0]
 document.getElementById('pfp-x').style.display='none'
 render();switchS(sid)
 }
@@ -751,7 +786,7 @@ document.getElementById('m-act').textContent=m?(m==='think'?'(Think)':'(Study)')
 }
 function hFile(e){
 const fs=[...e.files]
-showM('Early Access Notice',null,()=>{
+showc('Early Access Notice','Image analysis is in early preview. Performance may vary.',()=>{
 fs.forEach(f=>{
 const r=new FileReader()
 r.onload=ev=>{
@@ -761,7 +796,7 @@ updPv()
 r.readAsDataURL(f)
 })
 e.value=''
-},false,'Image analysis is in early preview. Performance may vary.')
+})
 }
 function updPv(){
 const p=document.getElementById('prev')
@@ -772,28 +807,28 @@ p.innerHTML+=`<div class="p-i"><img src="${src}"><div class="x" onclick="remI(${
 }
 function remI(i){imgs.splice(i,1);updPv()}
 function clrI(){imgs=[];updPv()}
-function showM(h,v,cb,isD=false,txt=null){
+function showm(h,v,cb,isd=false,txt=null){
 const m=document.getElementById('mdl'),i=document.getElementById('mdl-i'),a=document.getElementById('mdl-a'),t=document.getElementById('mdl-t')
 document.getElementById('mdl-h').textContent=h
 t.textContent=txt||'';t.style.display=txt?'block':'none'
 i.value=v||'';i.style.display=v===null?'none':'block'
-a.className=`mdl-btn mdl-ok ${isD?'del':''}`
-m.style.display='flex';if(v!==null)i.focus();a.onclick=()=>{cb(i.value);clsM()}
+a.className=`mdl-btn mdl-ok ${isd?'del':''}`
+m.style.display='flex';if(v!==null)i.focus();a.onclick=()=>{cb(i.value);clsm()}
 }
-function clsM(){document.getElementById('mdl').style.display='none'}
+function clsm(){document.getElementById('mdl').style.display='none'}
 function save(){
-if(!currU)return
+if(!curu)return
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-us[currU].ss=ss;us[currU].sid=sid;us[currU].tm=tmpMode;us[currU].tms=tmpMsgs
+us[curu].ss=ss;us[curu].sid=sid;us[curu].tm=tmpMode;us[curu].tms=tmpMsgs
 try{localStorage.setItem('us',JSON.stringify(us))}catch(e){console.log('Full')}
 }
 function load(){
-if(!currU){
+if(!curu){
 const u=localStorage.getItem('currU')
-if(u)login(u),rendExp();return
+if(u)login(u),rendexp();return
 }
 let us=JSON.parse(localStorage.getItem('us')||'{}')
-ss=us[currU].ss||[];sid=us[currU].sid||null;tmpMode=us[currU].tm||false;tmpMsgs=us[currU].tms||[]
+ss=us[curu].ss||[];sid=us[curu].sid||null;tmpMode=us[curu].tm||false;tmpMsgs=us[curu].tms||[]
 if(tmpMode){
 sid=null;mc.innerHTML=''
 if(tmpMsgs.length)tmpMsgs.forEach((m,i)=>add(m.t,m.is,false,i,m.ig))
@@ -880,13 +915,13 @@ add('Temporary Chat Active. Messages here are not saved.',true,false)
 }
 function rename(id){
 const s=ss.find(x=>x.id===id)
-showM('Rename Chat',s.title,(n)=>{if(n){s.title=n;save();render()}})
+showc('Rename Chat',`Enter new name for "${s.title}":`,(n)=>{if(n){s.title=n;save();render()}},s.title)
 }
 function del(id){
-showM('Delete Chat?',null,()=>{
+showc('Delete Chat?','Are you sure you want to delete this chat?',()=>{
 ss=ss.filter(x=>x.id!==id);if(sid===id)sid=ss[0]?.id||null
 if(!sid)createS();else{save();render();switchS(sid)}
-},true)
+})
 }
 function cpy(b){
 const t=b.closest('.code-c').querySelector('.code-b').innerText
@@ -939,7 +974,7 @@ function subQ(qid, qi, ci) {
   qb.querySelector('.qz-f').appendChild(nextBtn);
 }
 function prs(t,isG=false,tm=0,showP=false){
-  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU],ce=u.ce!==false,qi=u.qi!==false
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[curu],ce=u.ce!==false,qi=u.qi!==false
   if(currM==='study'&&qi&&isG&&t.includes('[QUIZ]')){
     const qAI=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2.7 3 6 3s6-1 6-3v-5"/></svg>`
     return `<div class="coding">${qAI}<span>Generating interactive quiz...</span></div>`
@@ -997,7 +1032,7 @@ if(g)return g
 u=u.replace(/[.,!?;:]+$/,'')
 try{const n=new URL(u).hostname;return `<a href="${u}" target="_blank" class="src"><img src="https://www.google.com/s2/favicons?domain=${n}"> ${n}</a>`}catch(e){return u}
 })
-const uo=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+const uo=JSON.parse(localStorage.getItem('us')||'{}')[curu]
 if(uo&&uo.exp){
 uo.exp.forEach(i=>{
 const r=new RegExp(`#${i.n}\\b`,'g')
@@ -1018,8 +1053,8 @@ if(t.includes('Temporary Chat Active'))d.classList.add('sys-msg')
 const idx=i!==null?i:(tmpMode?tmpMsgs.length:ss.find(x=>x.id===sid).msgs.length)
 const dAI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 9V5"/><path d="M12 19v-4"/><path d="M19 12h-4"/><path d="M9 12H5"/><path d="M17.5 7.5L15 10"/><path d="M6.5 16.5L9 14"/><path d="M17.5 16.5L15 14"/><path d="M6.5 7.5L9 10"/></svg>`
 const qAI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2.7 3 6 3s6-1 6-3v-5"/></svg>`
-const uo = JSON.parse(localStorage.getItem('us')||'{}') , us = uo[currU] || {inst:false,sn:true} , ail = currM==='study'?qAI:dAI
-const pfp=us.pfp?`<img src="${us.pfp}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:currU[0]
+const uo = JSON.parse(localStorage.getItem('us')||'{}') , us = uo[curu] || {inst:false,sn:true} , ail = currM==='study'?qAI:dAI
+const pfp=us.pfp?`<img src="${us.pfp}" style="width:100%;height:100%;object-fit:contain;background:#fff">`:curu[0]
 d.innerHTML=`<div class="avatar ${is?'a':'u'}">${is?ail:pfp}</div><div class="txt"></div><div class="actions">${!is?`<div class="btn" onclick="em(${idx})" data-tip="Edit message"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="btn" onclick="dm(${idx})" data-tip="Delete message"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>`:''}</div>`
 mc.appendChild(d);const tx=d.querySelector('.txt');let autoS=true
 mc.onscroll=()=>{const atB=mc.scrollHeight-mc.scrollTop-mc.clientHeight<50;autoS=atB;document.getElementById('down').style.display=atB?'none':'flex'}
@@ -1037,11 +1072,11 @@ if(mo)mo.t=t;  save();if(upd && is){
 endGen();if(us.sn!==false)playSn()
 if(t.includes('```')&&curscr){
 const code=t.match(/```(?:\w*)\n([\s\S]*?)```/)?.[1]
-if(code)showM('Apply Script?',null,(y)=>{
-const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+if(code)showc('Apply Script?','AI generated a script. Apply to current file?',(y)=>{
+const u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
 let s;  if(curfld){const f=u.exp.find(x=>x.id===curfld);s=f.c.find(x=>x.id===curscr)}else s=u.exp.find(x=>x.id===curscr)
-if(s){s.v=code;  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}))}
-},false,'AI generated a script. Apply to current file?')
+if(s){s.v=code;  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[curu]:u}))}
+})
 }
 };if(is&&upd)render()
 }
@@ -1098,7 +1133,7 @@ if(currM==='study'){
   else p="Study Mode: You are a tutor. Explain the topic clearly. If the user wants a quiz, they will ask. Topic: "+p
 }
 const msgsToUse=tmpMode?tmpMsgs:(ss.find(x=>x.id===sid)?.msgs||[])
-const msg=[],u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+const msg=[],u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
 if(u.sp)msg.push({role:'system',content:u.sp})
 if(u.ps)u.ps.forEach(p=>{
 if(p.u)msg.push({role:'user',content:p.u})
@@ -1156,7 +1191,7 @@ pi.oninput=()=>{
 pi.style.height='auto';  pi.style.height=pi.scrollHeight+'px'
 const v=pi.value,p=pi.selectionStart,t=v.substring(0,p),m=t.match(/#(\w*)$/)
 if(m){
-const q=m[1].toLowerCase(),u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+const q=m[1].toLowerCase(),u=JSON.parse(localStorage.getItem('us')||'{}')[curu]
 aco=[];if(u.exp)u.exp.forEach(i=>{
 if(i.t==='scr'&&i.n.toLowerCase().includes(q))aco.push(i)
 if(i.t==='fld'&&i.c)i.c.forEach(s=>{if(s.n.toLowerCase().includes(q))aco.push({...s,f:i.id})})
@@ -1172,7 +1207,7 @@ pi.onpaste=(e)=>{
   for(const it of its){
     if(it.type.includes('image')){
       e.preventDefault()
-      return showM('Image Upload Disabled',null,()=>{},false,'Images are currently disabled.')
+      return showc('Image Upload Disabled','Images are currently disabled.',()=>{})
     }
   }
 }
