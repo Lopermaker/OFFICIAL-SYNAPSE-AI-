@@ -15,12 +15,19 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
 .brand{padding:15px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;color:var(--t-c);border-bottom:1px solid var(--b-c)}
 .brand svg{color:var(--a-c)}
 #m{flex:1;display:flex;flex-direction:column;position:relative;background-color:var(--bg)}
-#new{padding:10px;margin:10px;border:1px solid #565869;border-radius:5px;cursor:pointer;transition:background 0.2s;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:10px}
-#new:hover{background-color:var(--h-bg)}
-#tmp{padding:10px;margin:0 10px 10px;border:1px solid #565869;border-radius:5px;cursor:pointer;transition:background 0.2s,border-color 0.2s;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--t-c)}
-#tmp:hover{background-color:var(--h-bg);border-color:#5436da}
-.tmp-on{border-color:#5436da!important;color:#5436da!important;background:rgba(84,54,218,0.1)!important}
-#hist{flex:1;overflow-y:auto;padding:10px}
+#new,#tmp,#exp-b{padding:10px;margin:10px;border:1px solid #565869;border-radius:5px;cursor:pointer;transition:all 0.2s;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--t-c)}
+#new:hover,#tmp:hover,#exp-b:hover{background-color:var(--h-bg)}
+#tmp:hover,#exp-b:hover{border-color:#5436da}
+#exp-b.active{border-color:#5436da;background:rgba(84,54,218,0.1)}
+.s-m{color:#5436da;font-weight:600;cursor:pointer;background:rgba(84,54,218,0.1);padding:0 4px;border-radius:3px;transition:all 0.2s}
+.s-m:hover{background:rgba(84,54,218,0.2);text-decoration:underline}
+#hist{flex:1;overflow-y:auto;padding:10px;border-top:1px solid var(--b-c)}
+#exp{display:none;flex-direction:column;max-height:300px;overflow:hidden;border-top:1px solid var(--b-c);margin:0 10px;padding:10px 0}
+.ed-c{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:3000;display:none;flex-direction:column}
+.ed-h{padding:10px 20px;background:var(--s-bg);border-bottom:1px solid var(--b-c);display:flex;align-items:center;gap:15px;font-size:13px;color:var(--t-s)}
+.ed-h span{color:var(--t-c);font-weight:600}
+.ed-b{flex:1;width:100%;background:transparent;border:none;color:var(--t-c);padding:20px;font-family:monospace;font-size:14px;outline:none;resize:none}
+.ed-f{padding:10px 20px;border-top:1px solid var(--b-c);display:flex;justify-content:flex-end;gap:10px}
 .item{padding:10px;margin-bottom:5px;border-radius:5px;cursor:pointer;font-size:14px;color:var(--t-c);display:flex;align-items:center;gap:10px;position:relative}
 .item:hover,.item.active{background-color:var(--h-bg)}
 .dots{opacity:0;transition:opacity 0.2s;padding:2px;border-radius:4px;flex-shrink:0}
@@ -238,12 +245,12 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 <div id="new" data-tip="Start a new conversation">+ New chat</div>
 <div id="tmp" onclick="createTmp()" data-tip="Chat without saving history"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22V11a6 6 0 0 0-12 0v11l1.5-1.5L9 22z"/><path d="M10 9h.01"/><path d="M14 9h.01"/></svg> Temporary</div>
 <div id="exp-b" onclick="togExp()" data-tip="Scripting Explorer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg> Explorer</div>
-<div id="exp" style="display:none;flex-direction:column;flex:1;overflow:hidden;border-top:1px solid var(--b-c);margin-top:10px;padding-top:10px">
+<div id="exp">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 10px 10px;font-size:11px;font-weight:700;color:var(--t-s);text-transform:uppercase;letter-spacing:0.5px">
 <span>Explorer</span>
 <div style="display:flex;gap:8px">
-<div class="btn" onclick="addFld()" data-tip="New Folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7"/><path d="M11 12h10"/></svg></div>
-<div class="btn" onclick="addScr()" data-tip="New Script"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div>
+<div class="btn" onclick="addFld()" data-tip="New Folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg></div>
+<div class="btn" onclick="addScr()" data-tip="New Script"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
 </div>
 </div>
 <div id="exp-l" style="flex:1;overflow-y:auto;padding:0 5px"></div>
@@ -348,10 +355,10 @@ if(el&&(!e.relatedTarget||!el.contains(e.relatedTarget))){clearTimeout(ttT);docu
 })
 document.addEventListener('mousedown',()=>{clearTimeout(ttT);document.getElementById('tt').style.display='none'})
 function togExp(){
-  const exp=document.getElementById('exp');
-  const expB=document.getElementById('exp-b');
-  exp.style.display=exp.style.display==='flex'?'none':'flex';
-  expB.classList.toggle('active');
+const exp=document.getElementById('exp')
+const expB=document.getElementById('exp-b')
+exp.style.display=exp.style.display==='flex'?'none':'flex'
+expB.classList.toggle('active')
 }
 function addFld(){
   const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
@@ -376,44 +383,49 @@ function addScr(fid=null){
   rendExp();
 }
 function rendExp(){
-  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
-  const l=document.getElementById('exp-l');
-  l.innerHTML='';
-  if(!u.exp)return;
-  u.exp.forEach(i=>{
-    const d=document.createElement('div');
-    d.style.padding='5px 10px';
-    d.style.cursor='pointer';
-    d.style.fontSize='13px';
-    d.style.display='flex';
-    d.style.alignItems='center';
-    d.style.gap='8px';
-    d.innerHTML=i.t==='fld'?'📁 '+i.n:'📄 '+i.n;
-    if(i.t==='scr')d.onclick=()=>edScr(i.id);
-    l.appendChild(d);
-    if(i.t==='fld'&&i.c){
-      i.c.forEach(s=>{
-        const sd=document.createElement('div');
-        sd.style.padding='5px 10px 5px 25px';
-        sd.style.cursor='pointer';
-        sd.style.fontSize='13px';
-        sd.innerHTML='📄 '+s.n;
-        sd.onclick=()=>edScr(s.id,i.id);
-        l.appendChild(sd);
-      });
-    }
-  });
+const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+const l=document.getElementById('exp-l')
+l.innerHTML=''
+if(!u.exp)return
+u.exp.forEach(i=>{
+const d=document.createElement('div')
+d.className='item'
+d.style.padding='6px 10px'
+d.style.margin='0'
+d.style.borderRadius='4px'
+d.innerHTML=i.t==='fld'?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg> ${i.n}`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> ${i.n}`
+if(i.t==='scr')d.onclick=()=>edScr(i.id)
+l.appendChild(d)
+if(i.t==='fld'&&i.c){
+i.c.forEach(s=>{
+const sd=document.createElement('div')
+sd.className='item'
+sd.style.padding='6px 10px 6px 25px'
+sd.style.margin='0'
+sd.style.borderRadius='4px'
+sd.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> ${s.n}`
+sd.onclick=()=>edScr(s.id,i.id)
+l.appendChild(sd)
+})
+}
+})
 }
 function edScr(sid,fid=null){
-  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
-  let s;
-  if(fid)s=u.exp.find(x=>x.id===fid).c.find(x=>x.id===sid);
-  else s=u.exp.find(x=>x.id===sid);
-  showM('Edit Script',s.v,(v)=>{
-    s.v=v;
-    localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}));
-  },true);
+const u=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+let s,p=null
+if(fid){p=u.exp.find(x=>x.id===fid);s=p.c.find(x=>x.id===sid)}
+else s=u.exp.find(x=>x.id===sid)
+const ed=document.getElementById('ed'),tv=document.getElementById('ed-v'),th=document.getElementById('ed-t'),sb=document.getElementById('ed-s')
+ed.style.display='flex'
+tv.value=s.v
+th.innerHTML=`<span style="opacity:0.6">#</span> <span>${p?p.n+' <span style="opacity:0.4">></span> ':''}${s.n}</span>`
+sb.onclick=()=>{
+s.v=tv.value
+localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}))
+clEd()
 }
+}
+function clEd(){document.getElementById('ed').style.display='none'}
 function togA(){
 isL=!isL;isB=false
 document.getElementById('a-h').textContent=isL?'Login':'Sign Up'
@@ -949,6 +961,19 @@ if(g)return g
 u=u.replace(/[.,!?;:]+$/,'')
 try{const n=new URL(u).hostname;return `<a href="${u}" target="_blank" class="src"><img src="https://www.google.com/s2/favicons?domain=${n}"> ${n}</a>`}catch(e){return u}
 })
+const uo=JSON.parse(localStorage.getItem('us')||'{}')[currU]
+if(uo&&uo.exp){
+uo.exp.forEach(i=>{
+const r=new RegExp(`#${i.n}\\b`,'g')
+h=h.replace(r,`<span class="s-m" onclick="edScr(${i.id})">#${i.n}</span>`)
+if(i.t==='fld'&&i.c){
+i.c.forEach(s=>{
+const sr=new RegExp(`#${s.n}\\b`,'g')
+h=h.replace(sr,`<span class="s-m" onclick="edScr(${s.id},${i.id})">#${s.n}</span>`)
+})
+}
+})
+}
 return h.replace(/\n/g,'<br>')
 }
 function add(t,is,upd=true,i=null,ig=null){
@@ -1081,6 +1106,14 @@ pi.onpaste=(e)=>{
 }
 load();window.onbeforeunload=save
 </script>
+<div id="ed" class="ed-c">
+<div class="ed-h"><div id="ed-t" style="display:flex;align-items:center;gap:5px"></div><div style="flex:1"></div><div class="x" onclick="clEd()"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div></div>
+<textarea id="ed-v" class="ed-b" spellcheck="false"></textarea>
+<div class="ed-f">
+<div class="btn" onclick="clEd()">Cancel</div>
+<div class="btn active" id="ed-s">Save</div>
+</div>
+</div>
 <div id="tt"></div>
 </body>
 </html>
