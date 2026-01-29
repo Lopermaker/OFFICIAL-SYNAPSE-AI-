@@ -140,7 +140,7 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
 .auth-btn{width:100%;padding:14px;background:var(--a-c);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:16px;margin-top:10px;margin-bottom:20px;transition:background 0.2s}
 .auth-btn:hover{background:#1a7f64;transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,163,127,0.3)}
 .auth-t{color:var(--t-s);font-size:14px;cursor:pointer}
-.auth-t span{color:var(--a-c)}
+.auth-t span, #a-b-l span{color:var(--a-c)}
 #u-i{padding:10px;margin-top:auto;border-top:1px solid var(--b-c);display:flex;align-items:center;justify-content:space-between;font-size:13px}
 #u-i .lo{cursor:pointer;color:var(--t-s);display:flex;align-items:center}
 #u-i .lo:hover{color:var(--t-c)}
@@ -224,7 +224,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 <button class="auth-btn" id="a-b" onclick="auth()">Login</button>
 <div class="auth-t" id="a-t" onclick="togA()">Don't have an account? <span>Sign up</span></div>
-<div style="margin-top:15px;font-size:12px;color:var(--t-s);cursor:pointer" id="a-b-l" onclick="togB()">Lost your password? Use your <span style="color:var(--a-c)">Backup Code</span></div>
+<div style="margin-top:15px;font-size:12px;color:var(--t-s);cursor:pointer" id="a-b-l" onclick="togB()">Lost your password? Use your <span>Backup Code</span></div>
 </div>
 </div>
 <div id="s">
@@ -309,7 +309,7 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
         </div>
 
         <div id="c-data" class="tab-content">
-              <div class="set-o"><label>Backup Code</label><div style="display:flex;gap:10px;margin-bottom:10px;background:var(--m-bg);padding:10px;border-radius:5px;border:1px solid var(--b-c);align-items:center;justify-content:space-between;position:relative"><span id="bid-v" style="font-family:monospace;font-weight:700;letter-spacing:1px;color:var(--a-c);-webkit-text-security:disc"></span><div style="display:flex;gap:10px;align-items:center"><div class="eye" style="position:static;transform:none" onclick="togBv()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="b-eye-o"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="b-eye-c" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></div><button class="mdl-btn mdl-cn" onclick="cpyB()" style="padding:5px 10px;font-size:12px">Copy</button></div></div><p style="font-size:11px;color:var(--t-s);margin-bottom:15px">Use this 10-character code to log back into your account from the login screen.</p><div class="sw-c" style="border-color:#ff4b4b;justify-content:center;background:rgba(255,75,75,0.15)" onclick="resetAll()"><div style="font-size:13px;color:#d93025;font-weight:700">FACTORY RESET (DELETE ALL CHATS)</div></div></div>
+              <div class="set-o"><label>Backup Code</label><div style="display:flex;gap:10px;margin-bottom:10px;background:var(--m-bg);padding:10px;border-radius:5px;border:1px solid var(--b-c);align-items:center;justify-content:space-between;position:relative"><span id="bid-v" style="font-family:monospace;font-weight:700;letter-spacing:1px;color:var(--a-c);-webkit-text-security:disc"></span><div style="display:flex;gap:10px;align-items:center"><div class="eye" style="position:static;transform:none" onclick="togBv()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="b-eye-o"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="b-eye-c" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></div><button class="mdl-btn mdl-cn" onclick="cpyB()" style="padding:5px 10px;font-size:12px">Copy</button></div></div><p style="font-size:11px;color:var(--t-s);margin-bottom:5px">Use this 10-character code to log back into your account from the login screen.</p><p style="font-size:11px;color:#ff4b4b;margin-bottom:15px;font-weight:700">⚠️ NEVER share this code with anyone! It provides full access to your account.</p><div class="sw-c" style="border-color:#ff4b4b;justify-content:center;background:rgba(255,75,75,0.15)" onclick="resetAll()"><div style="font-size:13px;color:#d93025;font-weight:700">FACTORY RESET (DELETE ALL CHATS)</div></div></div>
           </div>
 
         <div id="c-own" class="tab-content">
