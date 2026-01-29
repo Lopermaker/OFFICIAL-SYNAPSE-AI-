@@ -185,7 +185,7 @@ body{margin:0;padding:0;background-color:var(--bg);color:var(--t-c);font-family:
 .txt h3{font-size:1.1em}
 .txt b{color:var(--t-c);font-weight:600}
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#565869;border-radius:4px}::-webkit-scrollbar-thumb:hover{background:#acacbe}
-.brand,.item,.btn,.tool,#send,.sw-c,.t-btn,.add-p,.mdl-btn,.auth-t,.lo,#u-n{user-select:none}
+.brand,.item,.btn,.tool,#send,.sw-c,.t-btn,.add-p,.mdl-btn,.auth-t,.lo,#u-n,#new,#tmp,.avatar,.dots,.menu div,.qz-h,.qz-lp,.qz-res,.qz-sub,.set-tab,#u-i,.hist-h,.actions,.sys-msg,.own-t{user-select:none}
  .set-sb{width:200px;background:var(--s-bg);border-right:1px solid var(--b-c);display:flex;flex-direction:column;padding:10px;gap:5px}
 #set-c{max-width:800px;display:flex;padding:0;overflow:hidden;height:600px;max-height:90vh}
 .set-tab{padding:10px;border-radius:6px;cursor:pointer;color:var(--t-s);display:flex;align-items:center;gap:10px;font-size:14px;transition:background 0.2s,color 0.2s}
@@ -648,7 +648,7 @@ else g['Older'].push(s)
 })
 Object.keys(g).forEach(k=>{
 if(g[k].length){
-const h=document.createElement('div');h.textContent=k;h.style.cssText='padding:10px 10px 5px;font-size:12px;color:#8e8ea0;font-weight:600;margin-top:10px';ht.appendChild(h)
+const h=document.createElement('div');h.className='hist-h';h.textContent=k;h.style.cssText='padding:10px 10px 5px;font-size:12px;color:#8e8ea0;font-weight:600;margin-top:10px';ht.appendChild(h)
 g[k].forEach(s=>{
 const d=document.createElement('div')
 d.className=`item ${s.id===sid?'active':''}`
@@ -830,6 +830,7 @@ return h.replace(/\n/g,'<br>')
 }
 function add(t,is,upd=true,i=null,ig=null){
 const d=document.createElement('div');d.className='msg'
+if(t.includes('Temporary Chat Active'))d.classList.add('sys-msg')
 const idx=i!==null?i:(tmpMode?tmpMsgs.length:ss.find(x=>x.id===sid).msgs.length)
 const dAI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 9V5"/><path d="M12 19v-4"/><path d="M19 12h-4"/><path d="M9 12H5"/><path d="M17.5 7.5L15 10"/><path d="M6.5 16.5L9 14"/><path d="M17.5 16.5L15 14"/><path d="M6.5 7.5L9 10"/></svg>`
 const qAI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2.7 3 6 3s6-1 6-3v-5"/></svg>`
