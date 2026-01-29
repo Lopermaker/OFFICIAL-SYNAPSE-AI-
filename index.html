@@ -823,6 +823,7 @@ h=h.replace(/^### (.*$)/gim,'<h3>$1</h3>').replace(/###(.*?)###/g,'<h3>$1</h3>')
 h=h.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')
 h=h.replace(/(<[^>]+>)|(https?:\/\/[^\s<)]+)/g,(m,g,u)=>{
 if(g)return g
+u=u.replace(/[.,!?;:]+$/,'')
 try{const n=new URL(u).hostname;return `<a href="${u}" target="_blank" class="src"><img src="https://www.google.com/s2/favicons?domain=${n}"> ${n}</a>`}catch(e){return u}
 })
 return h.replace(/\n/g,'<br>')
@@ -846,7 +847,7 @@ if(upd){
  else{const s=ss.find(x=>x.id===sid);if(s){s.msgs.push(mo);s.ts=Date.now();if(!is)render()}}
  save()
 }
-const fin=()=>{if(mo)mo.t=t;save();if(upd && is){endGen();if(us.sn!==false)playSn()};pSrc(t,tx);if(is&&upd)render()}
+const fin=()=>{if(mo)mo.t=t;save();if(upd && is){endGen();if(us.sn!==false)playSn()};if(is&&upd)render()}
 if(!is||!upd){sp.innerHTML=prs(t);fin()}else if(us.inst){sp.innerHTML=prs(t);fin()}else{
 const av=d.querySelector('.avatar.a');if(av)av.classList.add(currM==='think'?'thinking':'pulsing')
 let st=Date.now(),tm=0
@@ -860,17 +861,6 @@ if(i<t.length){
 }else{clearInterval(ty);ty=null;if(av)av.classList.remove('pulsing','thinking');sp.innerHTML=prs(t);fin();if(autoS)mc.scrollTop=mc.scrollHeight}
 },15)}
 mc.scrollTop=mc.scrollHeight
-}
-function pSrc(t,el){
-const u=t.match(/https?:\/\/[^\s)]+/g)
-if(u){
-const d=document.createElement('div');d.className='srcs'
-const ud=[...new Set(u)].slice(0,4)
-ud.forEach(l=>{
-try{const n=new URL(l).hostname;d.innerHTML+=`<a href="${l}" target="_blank" class="src"><img src="https://www.google.com/s2/favicons?domain=${n}"> ${n}</a>`}catch(e){}
-})
-if(d.innerHTML)el.appendChild(d)
-}
 }
 function endGen(){
 gen=false;pi.disabled=false;pi.focus();if(ty){clearInterval(ty);ty=null}
