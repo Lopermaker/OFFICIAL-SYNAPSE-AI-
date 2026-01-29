@@ -237,6 +237,17 @@ document.querySelector('link[rel="icon"]').href='data:image/svg+xml;base64,'+bto
 </div>
 <div id="new" data-tip="Start a new conversation">+ New chat</div>
 <div id="tmp" onclick="createTmp()" data-tip="Chat without saving history"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22V11a6 6 0 0 0-12 0v11l1.5-1.5L9 22z"/><path d="M10 9h.01"/><path d="M14 9h.01"/></svg> Temporary</div>
+<div id="exp-b" onclick="togExp()" data-tip="Scripting Explorer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/></svg> Explorer</div>
+<div id="exp" style="display:none;flex-direction:column;flex:1;overflow:hidden;border-top:1px solid var(--b-c);margin-top:10px;padding-top:10px">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:0 10px 10px;font-size:11px;font-weight:700;color:var(--t-s);text-transform:uppercase;letter-spacing:0.5px">
+<span>Explorer</span>
+<div style="display:flex;gap:8px">
+<div class="btn" onclick="addFld()" data-tip="New Folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7"/><path d="M11 12h10"/></svg></div>
+<div class="btn" onclick="addScr()" data-tip="New Script"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div>
+</div>
+</div>
+<div id="exp-l" style="flex:1;overflow-y:auto;padding:0 5px"></div>
+</div>
 <div id="hist"></div>
 <div id="u-i">
 <div style="display:flex;align-items:center;gap:10px">
@@ -336,6 +347,73 @@ const el=e.target.closest('[data-tip]')
 if(el&&(!e.relatedTarget||!el.contains(e.relatedTarget))){clearTimeout(ttT);document.getElementById('tt').style.display='none'}
 })
 document.addEventListener('mousedown',()=>{clearTimeout(ttT);document.getElementById('tt').style.display='none'})
+function togExp(){
+  const exp=document.getElementById('exp');
+  const expB=document.getElementById('exp-b');
+  exp.style.display=exp.style.display==='flex'?'none':'flex';
+  expB.classList.toggle('active');
+}
+function addFld(){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
+  if(!u.exp)u.exp=[];
+  const name=prompt('Folder Name:');
+  if(!name)return;
+  u.exp.push({id:Date.now(),t:'fld',n:name,c:[]});
+  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}));
+  rendExp();
+}
+function addScr(fid=null){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
+  if(!u.exp)u.exp=[];
+  const name=prompt('Script Name:');
+  if(!name)return;
+  const s={id:Date.now(),t:'scr',n:name,v:''};
+  if(fid){
+    const f=u.exp.find(x=>x.id===fid);
+    if(f)f.c.push(s);
+  }else u.exp.push(s);
+  localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}));
+  rendExp();
+}
+function rendExp(){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
+  const l=document.getElementById('exp-l');
+  l.innerHTML='';
+  if(!u.exp)return;
+  u.exp.forEach(i=>{
+    const d=document.createElement('div');
+    d.style.padding='5px 10px';
+    d.style.cursor='pointer';
+    d.style.fontSize='13px';
+    d.style.display='flex';
+    d.style.alignItems='center';
+    d.style.gap='8px';
+    d.innerHTML=i.t==='fld'?'📁 '+i.n:'📄 '+i.n;
+    if(i.t==='scr')d.onclick=()=>edScr(i.id);
+    l.appendChild(d);
+    if(i.t==='fld'&&i.c){
+      i.c.forEach(s=>{
+        const sd=document.createElement('div');
+        sd.style.padding='5px 10px 5px 25px';
+        sd.style.cursor='pointer';
+        sd.style.fontSize='13px';
+        sd.innerHTML='📄 '+s.n;
+        sd.onclick=()=>edScr(s.id,i.id);
+        l.appendChild(sd);
+      });
+    }
+  });
+}
+function edScr(sid,fid=null){
+  const u=JSON.parse(localStorage.getItem('us')||'{}')[currU];
+  let s;
+  if(fid)s=u.exp.find(x=>x.id===fid).c.find(x=>x.id===sid);
+  else s=u.exp.find(x=>x.id===sid);
+  showM('Edit Script',s.v,(v)=>{
+    s.v=v;
+    localStorage.setItem('us',JSON.stringify({...JSON.parse(localStorage.getItem('us')),[currU]:u}));
+  },true);
+}
 function togA(){
 isL=!isL;isB=false
 document.getElementById('a-h').textContent=isL?'Login':'Sign Up'
@@ -393,15 +471,15 @@ if(!u)return aErr(isB?'Please enter your backup code':'Please enter a username')
 let us=JSON.parse(localStorage.getItem('us')||'{}')
 if(isB){
 const k=Object.keys(us).find(x=>us[x].bid===u.toUpperCase())
-if(k)return login(k)
+if(k){rendExp();return login(k)}
 return aErr('Invalid backup code')
 }
 if(isL){
-if(us[u]&&us[u].p===p){login(u)}else aErr('Invalid username or password')
+if(us[u]&&us[u].p===p){rendExp();login(u)}else aErr('Invalid username or password')
 }else{
 if(!p)return aErr('Please enter a password')
 if(us[u])return aErr('Username already exists')
-us[u]={p,ss:[],bid:gBid()};localStorage.setItem('us',JSON.stringify(us));login(u)
+us[u]={p,ss:[],bid:gBid()};localStorage.setItem('us',JSON.stringify(us));rendExp();login(u)
 }
 }
 function login(u){
@@ -664,7 +742,7 @@ try{localStorage.setItem('us',JSON.stringify(us))}catch(e){console.log('Full')}
 function load(){
 if(!currU){
 const u=localStorage.getItem('currU')
-if(u)login(u);return
+if(u)login(u),rendExp();return
 }
 let us=JSON.parse(localStorage.getItem('us')||'{}')
 ss=us[currU].ss||[];sid=us[currU].sid||null;tmpMode=us[currU].tm||false;tmpMsgs=us[currU].tms||[]
